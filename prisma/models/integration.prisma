@@ -1,0 +1,13 @@
+model Integration {
+  id               String @id @default(cuid())
+  name             String
+  githubToken      String @map("github_token")
+  discordToken     String @map("discord_token")
+  discordChannelId String @map("discord_channel_id")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([githubToken, discordToken, discordChannelId])
+  @@map("integrations")
+}
