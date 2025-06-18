@@ -10,6 +10,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { QueueNames } from './utils/queue-names.helper';
 import { ClearOneTimeCodesConsumerService } from './consumers/clear-one-time-codes-consumer.service';
 import { ClearOneTimeCodesQueueService } from './queues/clear-one-time-codes-queue.service';
+import { ApiHealthCheckQueueService } from './queues/api-health-check-queue.service';
+import { ApiHealthCheckConsumerService } from './consumers/api-health-check-consumer.service';
 
 @Module({
   imports: [
@@ -21,21 +23,30 @@ import { ClearOneTimeCodesQueueService } from './queues/clear-one-time-codes-que
         name: QueueNames.INGEST_EVENT_QUEUE,
       },
       {
-        name: QueueNames.CLEAR_ONE_TIME_CODES,
+        name: QueueNames.CLEAR_ONE_TIME_CODES_QUEUE,
+      },
+      {
+        name: QueueNames.API_HEALTH_CHECK_QUEUE,
       },
     ),
   ],
   providers: [
+    MailerService,
+    GoogleSheetsService,
+    PrismaService,
     SendEmailConsumerService,
     SendEmailQueueService,
     IngestEventQueueService,
     IngestEventConsumerService,
-    MailerService,
-    GoogleSheetsService,
-    PrismaService,
     ClearOneTimeCodesQueueService,
     ClearOneTimeCodesConsumerService,
+    ApiHealthCheckQueueService,
+    ApiHealthCheckConsumerService,
   ],
-  exports: [SendEmailQueueService, IngestEventQueueService],
+  exports: [
+    SendEmailQueueService,
+    IngestEventQueueService,
+    ApiHealthCheckQueueService,
+  ],
 })
 export class JobsModule {}

@@ -16,8 +16,9 @@ model User {
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  providers    Provider[]
-  integrations Integration[]
+  providers       Provider[]
+  integrations    Integration[]
+  apiHealthChecks ApiHealthCheck[]
 
   @@index([email])
   @@map("users")

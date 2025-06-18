@@ -5,6 +5,7 @@ const notFoundErrorMessagesHelper = {
   ADDRESS_NOT_FOUND: 'Endereço não encontrado para o CEP informado.',
   FILE_NOT_FOUND: 'Arquivo não encontrado.',
   HOOK_ID_NOT_FOUND: 'Hook ID não encontrado.',
+  API_HEALTH_CHECK_NOT_FOUND: 'Verificação de saúde da API não encontrada.',
 };
 
 const dynamicErrorMessagesHelper = {
@@ -17,6 +18,8 @@ const dynamicErrorMessagesHelper = {
   },
   regexValidationError: (field: string, message: string) =>
     `Erro de validação para o campo "${field}": ${message}`,
+  unsopportedHttpMethod: (method: string) =>
+    `Método HTTP "${method}" não suportado. Por favor, use um dos seguintes: GET, POST, PUT, DELETE, PATCH, HEAD.`,
 };
 
 export const ErrorMessagesHelper = {

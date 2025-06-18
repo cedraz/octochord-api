@@ -8,7 +8,7 @@ import { Cron } from '@nestjs/schedule';
 @Injectable()
 export class ClearOneTimeCodesQueueService {
   constructor(
-    @InjectQueue(QueueNames.CLEAR_ONE_TIME_CODES)
+    @InjectQueue(QueueNames.CLEAR_ONE_TIME_CODES_QUEUE)
     private clearOneTimeCodesQueue: Queue,
     private prismaService: PrismaService,
   ) {}
@@ -20,9 +20,12 @@ export class ClearOneTimeCodesQueueService {
     });
 
     if (expiredOneTimeCodes.length !== 0) {
-      await this.clearOneTimeCodesQueue.add(QueueNames.CLEAR_ONE_TIME_CODES, {
-        expiredOneTimeCodes,
-      });
+      await this.clearOneTimeCodesQueue.add(
+        QueueNames.CLEAR_ONE_TIME_CODES_QUEUE,
+        {
+          expiredOneTimeCodes,
+        },
+      );
     }
   }
 }

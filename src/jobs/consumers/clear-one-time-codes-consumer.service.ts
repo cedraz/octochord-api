@@ -4,7 +4,7 @@ import { QueueNames } from '../utils/queue-names.helper';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ClearOneTimeCodesDto } from '../dto/clear-one-time-codes.dto';
 
-@Processor(QueueNames.CLEAR_ONE_TIME_CODES)
+@Processor(QueueNames.CLEAR_ONE_TIME_CODES_QUEUE)
 export class ClearOneTimeCodesConsumerService extends WorkerHost {
   constructor(private prismaService: PrismaService) {
     super();

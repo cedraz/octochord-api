@@ -28,7 +28,7 @@ export class MailerService {
     });
   }
 
-  async sendVerifyEmailCode({ to, subject, message }: EmailData) {
+  async sendEmail({ to, subject, message }: EmailData) {
     const emailTemplate = createEmailTemplate({ message });
 
     await this.transporter.sendMail({

@@ -18,6 +18,7 @@ import { OneTimeCodeModule } from './one-time-code/one-time-code.module';
 import { IntegrationModule } from './integration/integration.module';
 import { RequestLoggerMiddleware } from './logger/request-logger.middleware';
 import { CustomLogger } from './logger/logger.service';
+import { ApiHealthCheckModule } from './api-health-check/api-health-check.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { CustomLogger } from './logger/logger.service';
     StripeModule,
     OneTimeCodeModule,
     IntegrationModule,
+    ApiHealthCheckModule,
   ],
   controllers: [AppController],
   providers: [CustomLogger],

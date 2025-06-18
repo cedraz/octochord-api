@@ -1,0 +1,31 @@
+model ApiHealthCheck {
+  id            String      @id @default(cuid())
+  url           String
+  status        APIStatus
+  lastCheckedAt DateTime    @default(now()) @map("last_checked_at")
+  interval      Int         @default(900) // Interval in seconds
+  method        HttpMethods @default(GET)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("api_health_checks")
+}
+
+enum APIStatus {
+  UP
+  DOWN
+  PENDING
+}
+
+enum HttpMethods {
+  GET
+  POST
+  PUT
+  DELETE
+  PATCH
+  HEAD
+}
