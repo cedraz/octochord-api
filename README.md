@@ -54,7 +54,7 @@ docker compose up
 Para utilizar o PSQL, basta executar o seguinte comando:
 
 ```
-docker exec -it <container_name ou container_id> psql -U linkboost -d linkboostdb
+docker exec -it postgres-octochord psql -U octochord -d octochorddb
 ```
 
 **se precisar utilize o comando sudo**

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
@@ -16,6 +16,8 @@ import { CloudinaryModule } from './providers/cloudinary/cloudinary.module';
 import { GoogleSheetsModule } from './providers/google-sheets/google-sheets.module';
 import { OneTimeCodeModule } from './one-time-code/one-time-code.module';
 import { IntegrationModule } from './integration/integration.module';
+import { RequestLoggerMiddleware } from './logger/request-logger.middleware';
+import { CustomLogger } from './logger/logger.service';
 
 @Module({
   imports: [
@@ -36,6 +38,10 @@ import { IntegrationModule } from './integration/integration.module';
     IntegrationModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [CustomLogger],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  }
+}

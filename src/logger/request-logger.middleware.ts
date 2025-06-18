@@ -27,7 +27,7 @@ export class RequestLoggerMiddleware implements NestMiddleware {
         this.logger.log(`${originalUrl} - ${duration}ms`, 'HTTP', {
           method,
           statusCode,
-          requestBody: body ? body : null,
+          // requestBody: body ? body : null,
         });
       };
 

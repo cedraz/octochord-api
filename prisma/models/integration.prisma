@@ -1,13 +1,21 @@
 model Integration {
-  id               String @id @default(cuid())
-  name             String
-  githubToken      String @map("github_token")
-  discordToken     String @map("discord_token")
-  discordChannelId String @map("discord_channel_id")
+  hookId              String @id @map("hook_id") @db.VarChar(255)
+  name                String @unique @map("name") @db.VarChar(255)
+  githubWebhookSecret String @map("github_webhook_secret") @db.VarChar(255)
 
-  userId String @map("user_id")
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discordWebhooks DiscordWebhook[]
+  userId          String           @map("user_id") @db.VarChar(255)
+  user            User             @relation(fields: [userId], references: [id])
 
-  @@unique([githubToken, discordToken, discordChannelId])
   @@map("integrations")
+}
+
+model DiscordWebhook {
+  discordWebhookURL String @map("discord_webhook_url") @db.VarChar(255)
+  hookId            String @map("hook_id") @db.VarChar(255)
+
+  integration Integration @relation(fields: [hookId], references: [hookId])
+
+  @@unique([discordWebhookURL, hookId])
+  @@map("discord_webhooks")
 }

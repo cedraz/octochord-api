@@ -3,53 +3,71 @@ import {
   Post,
   Body,
   Headers,
-  HttpException,
-  HttpStatus,
+  UseGuards,
+  Request,
+  NotFoundException,
 } from '@nestjs/common';
 import { IntegrationService } from './integration.service';
-import * as crypto from 'crypto';
 import { PushEvent } from '@octokit/webhooks-types';
+import { CreateIntegrationDto } from './dto/create-integration.dto';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiHideProperty,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Request as ExpressRequest } from 'express';
+import { JwtPayload } from 'src/common/types/jwt-payload.interface';
+import { ErrorMessagesHelper } from 'src/helpers/error-messages.helper';
+import { Integration } from './entities/integration.entity';
 
 @Controller('integration')
 export class IntegrationController {
   constructor(private readonly integrationService: IntegrationService) {}
 
-  @Post('send-discord-message')
-  async sendDiscordMessage() {
-    await this.integrationService.sendDiscordMessage('ASGASGASGAS TESTE');
-    return { status: 'Mensagem enviada com sucesso' };
+  @Post()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiCreatedResponse({
+    type: Integration,
+  })
+  create(
+    @Body() createIntegrationDto: CreateIntegrationDto,
+    @Request() req: ExpressRequest,
+  ) {
+    const user = req.user as JwtPayload;
+    return this.integrationService.create(user.sub, createIntegrationDto);
   }
 
+  @ApiHideProperty()
   @Post('webhook')
   async handleWebhook(
     @Headers('x-github-event') eventType: string,
     @Headers('x-hub-signature-256') signature: string,
+    @Headers('x-github-hook-id') hookId: string,
     @Body() payload: PushEvent,
   ) {
-    const expectedSignature = 'githubwebhooksecret';
-    if (!this.verifySignature(signature, expectedSignature, payload)) {
-      throw new HttpException('Assinatura inválida', HttpStatus.FORBIDDEN);
+    console.log('Received webhook event:', eventType);
+    console.log('Received signature:', signature);
+    console.log('Received hook ID:', hookId);
+
+    const integration =
+      await this.integrationService.findIntegrationByHookId(hookId);
+
+    if (!integration) {
+      throw new NotFoundException(ErrorMessagesHelper.HOOK_ID_NOT_FOUND);
     }
 
-    if (eventType === 'push') {
-      console.log('Evento de push recebido:', payload);
-      console.log('Pusher: ', payload.pusher.name);
-      await this.integrationService.sendDiscordMessage(
-        `Novo push por ${payload.pusher.name} no repositório ${payload.repository.full_name}`,
-      );
-    }
-  }
+    this.integrationService.verifySignature(
+      signature,
+      integration.githubWebhookSecret,
+      payload,
+    );
 
-  private verifySignature(
-    signature: string,
-    secret: string,
-    payload: any,
-  ): boolean {
-    if (!signature || !secret) return false;
-
-    const hmac = crypto.createHmac('sha256', secret);
-    const digest =
-      'sha256=' + hmac.update(JSON.stringify(payload)).digest('hex');
-    return crypto.timingSafeEqual(Buffer.from(digest), Buffer.from(signature));
+    return this.integrationService.sendDiscordMessages({
+      username: payload.pusher.name,
+      integration,
+      payload,
+    });
   }
 }

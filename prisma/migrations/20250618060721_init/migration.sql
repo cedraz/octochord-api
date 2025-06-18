@@ -3,14 +3,18 @@ CREATE TYPE "VerificationType" AS ENUM ('EMAIL_VERIFICATION', 'PASSWORD_RESET');
 
 -- CreateTable
 CREATE TABLE "integrations" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "github_token" TEXT NOT NULL,
-    "discord_token" TEXT NOT NULL,
-    "discord_channel_id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
+    "hook_id" VARCHAR(255) NOT NULL,
+    "name" VARCHAR(255) NOT NULL,
+    "github_webhook_secret" VARCHAR(255) NOT NULL,
+    "user_id" VARCHAR(255) NOT NULL,
 
-    CONSTRAINT "integrations_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "integrations_pkey" PRIMARY KEY ("hook_id")
+);
+
+-- CreateTable
+CREATE TABLE "discord_webhooks" (
+    "discord_webhook_url" VARCHAR(255) NOT NULL,
+    "hook_id" VARCHAR(255) NOT NULL
 );
 
 -- CreateTable
@@ -63,7 +67,10 @@ CREATE TABLE "one_time_codes" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "integrations_github_token_discord_token_discord_channel_id_key" ON "integrations"("github_token", "discord_token", "discord_channel_id");
+CREATE UNIQUE INDEX "integrations_name_key" ON "integrations"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "discord_webhooks_discord_webhook_url_hook_id_key" ON "discord_webhooks"("discord_webhook_url", "hook_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
@@ -78,7 +85,10 @@ CREATE UNIQUE INDEX "providers_provider_id_provider_account_id_key" ON "provider
 CREATE UNIQUE INDEX "one_time_codes_identifier_key" ON "one_time_codes"("identifier");
 
 -- AddForeignKey
-ALTER TABLE "integrations" ADD CONSTRAINT "integrations_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "integrations" ADD CONSTRAINT "integrations_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "discord_webhooks" ADD CONSTRAINT "discord_webhooks_hook_id_fkey" FOREIGN KEY ("hook_id") REFERENCES "integrations"("hook_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "providers" ADD CONSTRAINT "providers_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
