@@ -9,10 +9,25 @@ model ApiHealthCheck {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailNotification EmailNotification?
 
   @@map("api_health_checks")
+}
+
+model EmailNotification {
+  id     Int      @id @default(autoincrement())
+  emails String[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  apiHealthCheckId String         @unique @map("api_health_check_id") @db.VarChar(255)
+  apiHealthCheck   ApiHealthCheck @relation(fields: [apiHealthCheckId], references: [id], onDelete: Cascade)
+
+  @@map("email_notifications")
 }
 
 enum APIStatus {

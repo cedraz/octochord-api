@@ -8,12 +8,14 @@ import axios, { AxiosResponse } from 'axios';
 import { MailerService } from 'src/providers/mailer/mailer.service';
 import { NotFoundException } from '@nestjs/common';
 import { ErrorMessagesHelper } from 'src/helpers/error-messages.helper';
+import { SendEmailQueueService } from '../queues/send-email-queue.service';
 
 @Processor(QueueNames.API_HEALTH_CHECK_QUEUE)
 export class ApiHealthCheckConsumerService extends WorkerHost {
   constructor(
     private prismaService: PrismaService,
     private mailerService: MailerService,
+    private sendEmailQueueService: SendEmailQueueService,
   ) {
     super();
   }
@@ -23,6 +25,11 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
     email: string,
     promise: Promise<AxiosResponse<any, any>>,
   ): Promise<void> {
+    const emailNotification =
+      await this.prismaService.emailNotification.findUnique({
+        where: { apiHealthCheckId: id },
+      });
+
     let newStatus: 'UP' | 'DOWN' = 'DOWN';
 
     try {
@@ -48,6 +55,16 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
         subject: 'API Health Check Alert',
         message: `The API with ID ${id} is currently DOWN. Please check the service.`,
       });
+
+      if (emailNotification) {
+        emailNotification.emails.forEach((email) => {
+          this.sendEmailQueueService.execute({
+            to: email,
+            subject: 'API Health Check Alert',
+            message: `The API with ID ${id} is currently DOWN. Please check the service.`,
+          });
+        });
+      }
     }
 
     await this.prismaService.apiHealthCheck.update({

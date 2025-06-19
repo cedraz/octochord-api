@@ -1,6 +1,22 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { HttpMethods } from '@prisma/client';
-import { IsEnum, IsInt, IsUrl, Max, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsEmail,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsUrl,
+  Max,
+  Min,
+} from 'class-validator';
+
+export class CreateEmailNotificationDto {
+  @IsArray()
+  @IsEmail({}, { each: true })
+  emails: string[];
+}
 
 export class CreateApiHealthCheckDto {
   @IsUrl()
@@ -17,4 +33,9 @@ export class CreateApiHealthCheckDto {
   })
   @IsEnum(HttpMethods)
   method: HttpMethods;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => CreateEmailNotificationDto)
+  createEmailNotificationDto?: CreateEmailNotificationDto;
 }

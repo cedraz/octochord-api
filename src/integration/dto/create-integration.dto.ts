@@ -1,5 +1,20 @@
-import { IsArray, IsString, IsUrl, Matches } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Matches,
+} from 'class-validator';
 import { ErrorMessagesHelper } from 'src/helpers/error-messages.helper';
+
+export class CreateEmailIntegrationDto {
+  @IsArray()
+  @IsEmail({}, { each: true })
+  emails: string[];
+}
 
 export class CreateIntegrationDto {
   @IsString()
@@ -20,4 +35,9 @@ export class CreateIntegrationDto {
     ),
   })
   hookId: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => CreateEmailIntegrationDto)
+  createEmailIntegrationDto?: CreateEmailIntegrationDto;
 }
