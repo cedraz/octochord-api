@@ -31,9 +31,14 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
       });
 
     let newStatus: 'UP' | 'DOWN' = 'DOWN';
+    let responseTime = 0;
 
     try {
       const response = await promise;
+
+      responseTime = response.headers['request-duration']
+        ? parseInt(response.headers['request-duration'] as string, 10)
+        : 0;
 
       newStatus =
         response.status >= 200 && response.status < 304 ? 'UP' : 'DOWN';
@@ -70,6 +75,15 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
     await this.prismaService.apiHealthCheck.update({
       where: { id },
       data: { status: newStatus, lastCheckedAt: new Date() },
+    });
+
+    await this.prismaService.apiHealthCheckLog.create({
+      data: {
+        status: newStatus,
+        checkedAt: new Date(),
+        responseTime,
+        apiHealthCheck: { connect: { id } },
+      },
     });
   }
 
