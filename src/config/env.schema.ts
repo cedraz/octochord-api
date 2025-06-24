@@ -36,7 +36,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  SHADOW_DATABASE_URL: string;
+  DIRECT_DATABASE_URL: string;
 
   @IsString()
   @IsNotEmpty()
