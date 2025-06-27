@@ -3,12 +3,31 @@ model Integration {
   name                String @unique @map("name") @db.VarChar(255)
   githubWebhookSecret String @map("github_webhook_secret") @db.VarChar(255)
 
-  discordWebhooks DiscordWebhook[]
-  userId          String           @map("user_id") @db.VarChar(255)
-  user            User             @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  discordWebhooks  DiscordWebhook[]
+  userId           String            @map("user_id") @db.VarChar(255)
+  user             User              @relation(fields: [userId], references: [id])
+  emailIntegration EmailIntegration?
 
   @@index([hookId])
   @@map("integrations")
+}
+
+model EmailIntegration {
+  id     Int      @id @default(autoincrement())
+  emails String[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  integrationId String      @unique @map("integration_id") @db.VarChar(255)
+  integration   Integration @relation(fields: [integrationId], references: [hookId], onDelete: Cascade)
+
+  @@map("email_integrations")
 }
 
 model DiscordWebhook {

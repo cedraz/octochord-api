@@ -64,10 +64,9 @@ export class IntegrationController {
       payload,
     );
 
-    return this.integrationService.sendDiscordMessages({
-      username: payload.pusher.name,
-      integration,
+    return this.integrationService.handleNotification({
       payload,
+      integration,
     });
   }
 }

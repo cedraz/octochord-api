@@ -27,14 +27,27 @@ export class ApiHealthCheckService {
       throw new NotFoundException(ErrorMessagesHelper.USER_NOT_FOUND);
     }
 
-    const apiHealthCheck = await this.prismaService.apiHealthCheck.create({
-      data: {
-        url: dto.url,
-        interval: dto.interval,
-        status: 'PENDING',
-        method: dto.method,
-        user: { connect: { id: userId } },
-      },
+    const apiHealthCheck = await this.prismaService.$transaction(async (tx) => {
+      const apiHealthCheck = await tx.apiHealthCheck.create({
+        data: {
+          url: dto.url,
+          interval: dto.interval,
+          method: dto.method,
+          user: { connect: { id: user.id } },
+          status: 'PENDING',
+        },
+      });
+
+      if (dto.createEmailNotificationDto) {
+        await tx.emailNotification.create({
+          data: {
+            emails: dto.createEmailNotificationDto.emails,
+            apiHealthCheck: { connect: { id: apiHealthCheck.id } },
+          },
+        });
+      }
+
+      return apiHealthCheck;
     });
 
     await this.apiHealthCheckQueueService.execute({
