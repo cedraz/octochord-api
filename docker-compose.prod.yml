@@ -1,0 +1,31 @@
+services:
+  api:
+    image: icarocedraz/octochord-api:latest
+    container_name: octochord-api
+    ports:
+      - 3000:3000
+    env_file:
+      - .env.prod
+    volumes:
+      - octochord-api-data:/var/bin/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-octochord
+    ports:
+      - ${REDIS_PORT}:6379
+    volumes:
+      - octochord-redis-data:/data
+    env_file:
+      - .env.prod
+    command: ["redis-server", "--appendonly", "yes"]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 64M
+
+volumes:
+  octochord-api-data:
+  octochord-redis-data:
+

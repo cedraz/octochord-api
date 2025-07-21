@@ -14,7 +14,7 @@ import { CloudinaryService } from 'src/providers/cloudinary/cloudinary.service';
 import { OneTimeCodeService } from 'src/one-time-code/one-time-code.service';
 import { MessageResponseDto } from 'src/common/dto/message-response.dto';
 import { UserSimple } from './entities/user.entity';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {

@@ -11,7 +11,7 @@ export class IngestEventConsumerService extends WorkerHost {
   }
 
   async process({ data }: Job<IngestEventDto>) {
-    const { googleSheets, auth, spreadsheetId } =
+    const { googleSheets, spreadsheetId } =
       await this.googleSheetsService.getAuthSheets();
 
     const { id, name, email, date, event_type } = data;
@@ -19,7 +19,6 @@ export class IngestEventConsumerService extends WorkerHost {
     const values = [[id, name, email, date, event_type]];
 
     await googleSheets.spreadsheets.values.append({
-      auth,
       spreadsheetId,
       range: 'Página1',
       valueInputOption: 'USER_ENTERED',

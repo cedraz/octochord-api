@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -10,12 +10,12 @@ async function main() {
     {
       name: 'User One',
       email: 'user1@example.com',
-      password: 'userpassword1',
+      password: 'user@123',
     },
     {
       name: 'User Two',
       email: 'user2@example.com',
-      password: 'userpassword2',
+      password: 'user@123',
     },
   ];
 
@@ -23,15 +23,17 @@ async function main() {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(user.password, salt);
 
-    await prisma.user.create({
-      data: {
-        name: user.name,
-        email: user.email,
-        passwordHash,
-        emailVerifiedAt: new Date(),
-        phone: '71999999999',
-      },
-    });
+    console.log(passwordHash);
+
+    // await prisma.user.create({
+    //   data: {
+    //     name: user.name,
+    //     email: user.email,
+    //     passwordHash,
+    //     emailVerifiedAt: new Date(),
+    //     phone: '71999999999',
+    //   },
+    // });
   }
 }
 
