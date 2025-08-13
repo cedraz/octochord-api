@@ -11,20 +11,17 @@ export class IngestEventConsumerService extends WorkerHost {
   }
 
   async process({ data }: Job<IngestEventDto>) {
-    const { googleSheets, spreadsheetId } =
-      await this.googleSheetsService.getAuthSheets();
-
-    const { id, name, email, date, event_type } = data;
-
-    const values = [[id, name, email, date, event_type]];
-
-    await googleSheets.spreadsheets.values.append({
-      spreadsheetId,
-      range: 'Página1',
-      valueInputOption: 'USER_ENTERED',
-      requestBody: {
-        values,
-      },
-    });
+    // const { googleSheets, spreadsheetId } =
+    //   await this.googleSheetsService.getAuthSheets();
+    // const { id, name, email, date, event_type } = data;
+    // const values = [[id, name, email, date, event_type]];
+    // await googleSheets.spreadsheets.values.append({
+    //   spreadsheetId,
+    //   range: 'Página1',
+    //   valueInputOption: 'USER_ENTERED',
+    //   requestBody: {
+    //     values,
+    //   },
+    // });
   }
 }

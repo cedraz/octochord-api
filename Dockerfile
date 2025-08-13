@@ -1,35 +1,35 @@
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS base
 
-RUN npm install -g pnpm
+RUN npm i -g pnpm
 
-WORKDIR /app
+FROM base AS build
+
+WORKDIR /usr/app
 
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma
 
-RUN pnpm install
-
+RUN pnpm i --frozen-lockfile
 RUN pnpm prisma generate
 
 COPY . .
 
-RUN pnpm run build
+RUN pnpm build
 
-RUN pnpm prune --prod
+FROM base as prunner
 
-FROM alpine:latest
+WORKDIR /usr/app
 
-RUN apk add --no-cache nodejs openssl
+COPY package.json pnpm-lock.yaml ./
 
-WORKDIR /app
+RUN pnpm i --prod --frozen-lockfile
 
-ENV NODE_ENV=production
+FROM node:20-alpine
 
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/prisma ./prisma
+WORKDIR /usr/app
 
-ENV PORT=8000
-EXPOSE $PORT
+COPY --from=build /usr/app/package.json ./package.json
+COPY --from=build /usr/app/dist ./dist
+COPY --from=prunner /usr/app/node_modules ./node_modules
 
-CMD ["node", "dist/src/main"]
+CMD ["node", "dist/main.js"]

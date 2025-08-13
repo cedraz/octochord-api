@@ -6,7 +6,7 @@ import { Readable } from 'stream';
 @Injectable()
 export class CloudinaryService {
   async uploadImage(
-    file: Express.Multer.File,
+    buffer: Buffer,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return new Promise((resolve, reject) => {
       const uploadStream = v2.uploader.upload_stream(
@@ -31,7 +31,7 @@ export class CloudinaryService {
       );
 
       const readableStream = new Readable();
-      readableStream.push(file.buffer);
+      readableStream.push(buffer);
       readableStream.push(null);
       readableStream.pipe(uploadStream);
     });
