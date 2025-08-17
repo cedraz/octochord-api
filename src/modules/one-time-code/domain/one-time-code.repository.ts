@@ -15,4 +15,6 @@ export abstract class OneTimeCodeRepository {
   ): Promise<OneTimeCodeEntity>;
 
   abstract delete(id: string): Promise<void>;
+
+  abstract deleteExpiredCodes(): Promise<number>;
 }

@@ -1,5 +1,5 @@
 import { v2 } from 'cloudinary';
-import { env } from 'src/config/env-validation';
+import { env } from 'src/shared/config/env.schema';
 
 export const CloudinaryProvider = {
   provide: 'CLOUDINARY_CONFIG',

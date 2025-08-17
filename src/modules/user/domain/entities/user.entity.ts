@@ -11,10 +11,6 @@ export class UserEntity {
   deletedAt?: Date;
   image?: string;
   emailVerifiedAt?: Date;
-  stripeCustomerId?: string;
-  stripeSubscriptionId?: string;
-  stripePriceId?: string;
-  stripeSubscriptionStatus?: string;
 
   static async createWithPassword(
     props: Partial<UserEntity> & { password: string },

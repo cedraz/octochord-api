@@ -13,7 +13,6 @@
   <img src="https://img.shields.io/badge/ts--node-3178C6?logo=ts-node&logoColor=white" />
   <img src="https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white" />
   <img src="https://img.shields.io/badge/Cloudinary-3448C1?logo=cloudinary&logoColor=white" />
-  <img src="https://img.shields.io/badge/Stripe-635BFF?logo=stripe&logoColor=white" />
   <img src="https://img.shields.io/badge/ESLint-4B32C3?logo=eslint&logoColor=white" />
   <img src="https://img.shields.io/badge/Axios-5A29E4?logo=axios&logoColor=white" />
   <img src="https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=white" />
@@ -32,7 +31,6 @@
 - 📊 **Monitoramento de APIs** com verificações automáticas de saúde
 - 🔗 **Integrações GitHub** com webhooks
 - 💬 **Notificações Discord** via webhooks
-- 💳 **Pagamentos** integrados com Stripe
 - 📧 **Sistema de emails** com templates
 - 🎯 **Códigos únicos** para verificação e reset de senha
 - 📁 **Upload de arquivos** com Cloudinary
@@ -98,7 +96,6 @@ src/
 ├── one-time-code/        # Códigos únicos
 ├── jobs/                 # Filas de processamento
 ├── providers/            # Integrações externas
-│   ├── stripe/          # Pagamentos
 │   ├── cloudinary/      # Upload de arquivos
 │   ├── mailer/          # Envio de emails
 │   └── google-sheets/   # Google Sheets

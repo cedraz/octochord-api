@@ -6,17 +6,17 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ErrorMessagesHelper } from 'src/helpers/error-messages.helper';
+import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
 import { CloudinaryService } from 'src/providers/cloudinary/cloudinary.service';
-import { MessageResponseDto } from 'src/common/dto/message-response.dto';
+import { MessageResponseDto } from 'src/shared/dto/message-response.dto';
 import * as bcrypt from 'bcryptjs';
 import { UserRepository } from '../domain/user.repository';
 import { UserEntity } from '../domain/entities/user.entity';
 import { UserResponseDto } from './dto/user-response.dto';
-import { VerificationType } from 'src/common/enums/verification-type.enum';
+import { VerificationType } from 'src/shared/enums/verification-type.enum';
 import { UserServiceAPI } from './user.service.interface';
 import { OneTimeCodeServiceAPI } from 'src/modules/one-time-code/application/one-time-code.service.interface';
-import { OTC_SERVICE_TOKEN } from 'src/common/tokens/tokens';
+import { OTC_SERVICE_TOKEN } from 'src/shared/tokens/tokens';
 
 @Injectable()
 export class UserService implements UserServiceAPI {
@@ -41,6 +41,7 @@ export class UserService implements UserServiceAPI {
     const user = await UserEntity.createWithPassword(createUserDto);
     const { passwordHash: _passwordHash, ...userWithoutPassword } =
       await this.userRepository.create(user);
+
     await this.getOrCreateOneTimeCode(userWithoutPassword.email);
 
     return userWithoutPassword;
@@ -63,7 +64,10 @@ export class UserService implements UserServiceAPI {
   private async getOrCreateOneTimeCode(
     email: string,
   ): Promise<{ expires: Date }> {
-    const oneTimeCode = await this.oneTimeCodeService.findByIdentifier(email);
+    console.log(this.oneTimeCodeService);
+    const oneTimeCode = await this.oneTimeCodeService.findByIdentifier({
+      identifier: email,
+    });
 
     if (
       !oneTimeCode ||
