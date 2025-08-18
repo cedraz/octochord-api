@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { APIStatus } from 'src/shared/enums/api-status.enum';
-import { HttpMethods } from 'src/shared/enums/http-methods.enum';
+import { APIStatus } from 'src/shared/domain/enums/api-status.enum';
+import { HttpMethods } from 'src/shared/domain/enums/http-methods.enum';
 import { EmailNotificationEntity } from './email-notification.entity';
 import { Type } from 'class-transformer';
 

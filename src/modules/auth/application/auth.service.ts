@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Inject,
   Injectable,
   NotFoundException,
@@ -14,14 +15,17 @@ import {
   OTC_SERVICE_TOKEN,
   USER_SERVICE_TOKEN,
 } from 'src/shared/tokens/tokens';
-import { VerificationType } from 'src/shared/enums/verification-type.enum';
+import { VerificationType } from 'src/shared/domain/enums/verification-type.enum';
 import { nanoid } from 'nanoid';
 import { RefreshTokenRepository } from '../domain/refresh-token.repository';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { TRefreshTokenPayload } from 'src/shared/types/jwt-payload.interface';
+import { TRefreshTokenPayload } from 'src/shared/types/jwt-payload';
 import { TokenResponseDto } from './dto/token-response.dto';
-import { MessageResponseDto } from 'src/shared/dto/message-response.dto';
+import { MessageResponseDto } from 'src/shared/application/dto/message-response.dto';
 import { OneTimeCodeServiceAPI } from 'src/modules/one-time-code/application/one-time-code.service.interface';
+import { ValidateOneTimeCodeDto } from 'src/modules/one-time-code/application/dto/validate-one-time-code.dto';
+import { OTCMetadata } from 'src/shared/types/metadata';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -126,13 +130,167 @@ export class AuthService {
     return { message: 'User logged out successfully' };
   }
 
-  // async verifyEmail(validateOneTimeCodeDto: ValidateOneTimeCodeDto) {
-  //   const oneTimeCode = await this.oneTimeCodeService.
+  async verifyEmail(
+    validateOneTimeCodeDto: ValidateOneTimeCodeDto,
+  ): Promise<MessageResponseDto> {
+    const oneTimeCode = await this.oneTimeCodeService.findByIdentifier({
+      identifier: validateOneTimeCodeDto.identifier,
+      code: validateOneTimeCodeDto.code,
+      type: validateOneTimeCodeDto.type,
+    });
 
-  //   if (!oneTimeCode || this.isOneTimeCodeExpired(oneTimeCode)) {
-  //     throw new ConflictException(
-  //       ErrorMessagesHelper.INVALID_VERIFICATION_REQUEST,
-  //     );
-  //   }
-  // }
+    if (!oneTimeCode || new Date() > oneTimeCode.expiresAt) {
+      throw new ConflictException(
+        ErrorMessagesHelper.INVALID_VERIFICATION_REQUEST,
+      );
+    }
+
+    const user = await this.userService.findByEmail(
+      validateOneTimeCodeDto.identifier,
+    );
+
+    await this.userService.update(user.id, {
+      emailVerifiedAt: new Date(),
+    });
+
+    return {
+      message: 'Email verified successfully',
+    };
+  }
+
+  async createChangeEmailOTC(
+    userId: string,
+    newEmail: string,
+  ): Promise<MessageResponseDto> {
+    const userWithSameEmail = await this.userService.findByEmail(newEmail);
+
+    if (userWithSameEmail) {
+      throw new ConflictException(ErrorMessagesHelper.USER_ALREADY_EXISTS);
+    }
+
+    const user = await this.userService.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException(ErrorMessagesHelper.USER_NOT_FOUND);
+    }
+
+    if (!user.emailVerifiedAt) {
+      throw new ConflictException(ErrorMessagesHelper.EMAIL_NOT_VERIFIED);
+    }
+
+    await this.oneTimeCodeService.createOneTimeCode({
+      createOneTimeCodeDto: {
+        identifier: newEmail,
+        type: VerificationType.EMAIL_VERIFICATION,
+        metadata: {
+          userId: user.id,
+        },
+      },
+      expiresIn: this.oneTimeCodeService.getOneTimeCodeExpirationTime(),
+    });
+
+    return {
+      message: 'Novo código de verificação enviado para o novo e-mail.',
+    };
+  }
+
+  async validateChangeEmailOTC(
+    validateOneTimeCodeDto: ValidateOneTimeCodeDto,
+  ): Promise<MessageResponseDto> {
+    const oneTimeCode = await this.oneTimeCodeService.findByIdentifier({
+      identifier: validateOneTimeCodeDto.identifier,
+      code: validateOneTimeCodeDto.code,
+      type: validateOneTimeCodeDto.type,
+    });
+
+    if (!oneTimeCode || new Date() > oneTimeCode.expiresAt) {
+      throw new ConflictException(
+        ErrorMessagesHelper.INVALID_VERIFICATION_REQUEST,
+      );
+    }
+
+    const metadata = oneTimeCode.metadata as unknown as OTCMetadata;
+
+    if (!metadata || !metadata.userId) {
+      throw new ConflictException(ErrorMessagesHelper.INVALID_METADATA);
+    }
+
+    const userWithSameEmail = await this.userService.findByEmail(
+      validateOneTimeCodeDto.identifier,
+    );
+
+    if (userWithSameEmail) {
+      throw new ConflictException(ErrorMessagesHelper.USER_ALREADY_EXISTS);
+    }
+
+    const user = await this.userService.findById(metadata.userId);
+
+    if (!user) {
+      throw new NotFoundException(ErrorMessagesHelper.USER_NOT_FOUND);
+    }
+
+    await Promise.all([
+      this.userService.update(user.id, {
+        email: validateOneTimeCodeDto.identifier,
+        emailVerifiedAt: new Date(),
+      }),
+      this.logout(user.id),
+      this.oneTimeCodeService.delete(oneTimeCode.id),
+    ]);
+
+    return { message: 'Email changed successfully' };
+  }
+
+  async recoverPassword({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException(ErrorMessagesHelper.USER_NOT_FOUND);
+    }
+
+    const salt = await bcrypt.genSalt(8);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    const userUpdated = await this.userService.update(user.id, {
+      passwordHash,
+    });
+
+    console.log('Password recovered for user:', userUpdated);
+
+    return { message: 'Senha alterada com sucesso.' };
+  }
+
+  async changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<MessageResponseDto> {
+    const user = await this.userService.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException(ErrorMessagesHelper.USER_NOT_FOUND);
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      oldPassword,
+      user.passwordHash,
+    );
+
+    if (!isPasswordValid) {
+      throw new ConflictException(ErrorMessagesHelper.INVALID_PASSWORD);
+    }
+
+    const salt = await bcrypt.genSalt(8);
+    const passwordHash = await bcrypt.hash(newPassword, salt);
+
+    await this.userService.update(user.id, { passwordHash });
+
+    return { message: 'Senha alterada com sucesso.' };
+  }
 }

@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
 import { IsEnum, IsOptional } from 'class-validator';
-import { PaginationQueryDto } from 'src/shared/dto/pagination-query.dto';
+import { PaginationQueryDto } from 'src/shared/application/dto/pagination-query.dto';
 
 enum ApiHealthCheckSortFieldEnum {
   CreatedAt = 'createdAt',

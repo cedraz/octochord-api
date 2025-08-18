@@ -1,4 +1,4 @@
-import { PaginationResultDto } from 'src/shared/entities/pagination-result.entity';
+import { PaginationResultDto } from 'src/shared/domain/entities/pagination-result.entity';
 import { ApiHealthCheckEntity } from './entities/api-health-check.entity';
 import { ApiHealthCheckPaginationDto } from '../application/dto/api-health-check.pagination.dto';
 import { UpdateApiHealthCheckDto } from '../application/dto/update-api-health-check.dto';

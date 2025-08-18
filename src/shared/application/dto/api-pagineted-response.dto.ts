@@ -6,7 +6,7 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { IsArray } from 'class-validator';
-import { PaginationResultDto } from '../entities/pagination-result.entity';
+import { PaginationResultDto } from '../../domain/entities/pagination-result.entity';
 
 export const ApiPaginatedResponse = <TModel extends Type<any>>(
   model: TModel,

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { StrategiesConstant } from 'src/shared/constants/strategies.constant';
+import { StrategiesHelper } from 'src/shared/helpers/strategies.helper';
 
 @Injectable()
 export class RefreshTokenAuthGuard extends AuthGuard(
-  StrategiesConstant.REFRESH_TOKEN_STRATEGY,
+  StrategiesHelper.REFRESH_TOKEN_STRATEGY,
 ) {}

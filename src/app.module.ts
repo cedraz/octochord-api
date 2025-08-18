@@ -12,10 +12,9 @@ import { OneTimeCodeModule } from './modules/one-time-code/one-time-code.module'
 import { IntegrationModule } from './modules/integration/integration.module';
 import { ApiHealthCheckModule } from './modules/api-health-check/api-health-check.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { LoggerInterceptor } from './shared/logger/logger-interceptor';
-import { CustomLogger } from './shared/logger/logger.service';
-import { SharedModule } from './shared/modules/shared.module';
+import { CustomLogger } from './shared/application/logger.service';
 import { env } from './shared/config/env.schema';
+import { LoggerInterceptor } from './shared/interceptors/logger-interceptor';
 
 @Module({
   imports: [
@@ -30,7 +29,6 @@ import { env } from './shared/config/env.schema';
     OneTimeCodeModule,
     IntegrationModule,
     ApiHealthCheckModule,
-    SharedModule,
   ],
   controllers: [AppController],
   providers: [

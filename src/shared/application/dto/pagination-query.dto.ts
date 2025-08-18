@@ -7,8 +7,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { OrderEnum } from '../enums/order.enum';
-import { PaginationResultDto } from '../entities/pagination-result.entity';
+import { OrderEnum } from '../../domain/enums/order.enum';
+import { PaginationResultDto } from '../../domain/entities/pagination-result.entity';
 
 export abstract class PaginationQueryDto<T extends string = 'createdAt'> {
   abstract sort: T;

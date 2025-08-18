@@ -13,18 +13,5 @@ export abstract class UserServiceAPI {
     updateUserDto: UpdateUserDto,
   ): Promise<UserEntity>;
 
-  abstract recoverPassword(params: {
-    email: string;
-    password: string;
-  }): Promise<any>;
-
-  abstract changePassword(
-    userId: string,
-    oldPassword: string,
-    newPassword: string,
-  ): Promise<any>;
-
   abstract uploadAvatar(id: string, buffer: Buffer): Promise<UserEntity>;
-
-  abstract changeEmail(userId: string, newEmail: string): Promise<any>;
 }

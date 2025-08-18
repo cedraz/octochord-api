@@ -10,7 +10,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import { HttpMethods } from 'src/shared/enums/http-methods.enum';
+import { HttpMethods } from 'src/shared/domain/enums/http-methods.enum';
 
 export class CreateEmailNotificationDto {
   @IsArray()

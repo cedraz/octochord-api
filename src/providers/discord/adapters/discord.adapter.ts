@@ -10,7 +10,7 @@ import {
 } from 'src/providers/discord/types/discord.types';
 import { api } from 'src/providers/axios';
 import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
-import { CustomLogger } from 'src/shared/logger/logger.service';
+import { CustomLogger } from 'src/shared/application/logger.service';
 import { isAxiosError } from 'axios';
 import { SendDiscordMessageDto } from '../dto/send-discord-message.dto';
 

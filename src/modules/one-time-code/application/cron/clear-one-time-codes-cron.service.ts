@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { OneTimeCodeRepository } from '../../domain/one-time-code.repository';
-import { CustomLogger } from 'src/shared/logger/logger.service';
+import { CustomLogger } from 'src/shared/application/logger.service';
 
 @Injectable()
 export class ClearOneTimeCodesCronService {

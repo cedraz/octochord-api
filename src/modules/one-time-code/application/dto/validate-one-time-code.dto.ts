@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsEmail, IsEnum } from 'class-validator';
-import { VerificationType } from 'src/shared/enums/verification-type.enum';
+import { VerificationType } from 'src/shared/domain/enums/verification-type.enum';
 
 export class ValidateOneTimeCodeDto {
   @IsEmail()

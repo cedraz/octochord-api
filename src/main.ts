@@ -1,7 +1,7 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
-import { CustomLogger } from './shared/logger/logger.service';
+import { CustomLogger } from './shared/application/logger.service';
 import { GlobalErrorFilter } from './shared/filters/global-error.filter';
 import { AppModule } from './app.module';
 import { env } from './shared/config/env.schema';

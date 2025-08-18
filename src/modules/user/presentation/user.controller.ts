@@ -15,18 +15,15 @@ import {
   ApiConflictResponse,
   ApiConsumes,
   ApiCreatedResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/application/guards/access-token-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { imageValidationPipe } from 'src/shared/pipes/image-validation.pipe';
-import { MessageResponseDto } from 'src/shared/dto/message-response.dto';
+import { MessageResponseDto } from 'src/shared/application/dto/message-response.dto';
 import { UserEntity } from '../domain/entities/user.entity';
 import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
-import { ChangeEmailDto } from '../application/dto/change-email.dto';
-import { ChangePasswordDto } from '../application/dto/change-password.dto';
 import { UpdateProfileDto } from '../application/dto/update-profile.dto';
 import { CreateUserDto } from '../application/dto/create-user.dto';
 import { UserServiceAPI } from '../application/user.service.interface';
@@ -107,35 +104,5 @@ export class UserController {
     @CurrentUser() user: TAuthenticatedUser,
   ) {
     return this.userService.uploadAvatar(user.sub, image.buffer);
-  }
-
-  @Patch('/profile/change-password')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Change logged user password' })
-  @ApiOkResponse({ type: MessageResponseDto })
-  changePassword(
-    @CurrentUser() user: TAuthenticatedUser,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ) {
-    return this.userService.changePassword(
-      user.sub,
-      changePasswordDto.oldPassword,
-      changePasswordDto.newPassword,
-    );
-  }
-
-  @Patch('/profile/change-email')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Send email verification to change logged user email',
-  })
-  @ApiOkResponse({ type: MessageResponseDto })
-  changeEmail(
-    @CurrentUser() user: TAuthenticatedUser,
-    @Body() changeEmailDto: ChangeEmailDto,
-  ) {
-    return this.userService.changeEmail(user.sub, changeEmailDto.newEmail);
   }
 }

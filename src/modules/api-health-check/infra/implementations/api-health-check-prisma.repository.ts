@@ -4,8 +4,8 @@ import { ApiHealthCheckRepository } from '../../domain/api-health-check.reposito
 import { ApiHealthCheckEntity } from '../../domain/entities/api-health-check.entity';
 import { EmailNotificationEntity } from '../../domain/entities/email-notification.entity';
 import { $Enums } from '@prisma/client';
-import { HttpMethods } from 'src/shared/enums/http-methods.enum';
-import { APIStatus } from 'src/shared/enums/api-status.enum';
+import { HttpMethods } from 'src/shared/domain/enums/http-methods.enum';
+import { APIStatus } from 'src/shared/domain/enums/api-status.enum';
 import { ApiHealthCheckPaginationDto } from '../../application/dto/api-health-check.pagination.dto';
 import { Transaction } from 'src/shared/domain/transaction';
 import { PrismaTransaction } from 'src/shared/prisma/prisma.transaction';

@@ -7,9 +7,9 @@ import { ApiHealthCheckQueueService } from './queue/api-health-check-queue.servi
 import { ApiHealthCheckRepository } from '../domain/api-health-check.repository';
 import { ApiHealthCheckEntity } from '../domain/entities/api-health-check.entity';
 import { UnitOfWork } from 'src/shared/domain/unit-of-work';
-import { APIStatus } from 'src/shared/enums/api-status.enum';
+import { APIStatus } from 'src/shared/domain/enums/api-status.enum';
 import { EmailNotificationEntity } from '../domain/entities/email-notification.entity';
-import { PaginationResultDto } from 'src/shared/entities/pagination-result.entity';
+import { PaginationResultDto } from 'src/shared/domain/entities/pagination-result.entity';
 import { UserServiceAPI } from 'src/modules/user/application/user.service.interface';
 import { USER_SERVICE_TOKEN } from 'src/shared/tokens/tokens';
 

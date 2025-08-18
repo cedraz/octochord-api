@@ -3,7 +3,7 @@ import { OneTimeCodeRepository } from '../../domain/one-time-code.repository';
 import { OneTimeCodeEntity } from '../../domain/entities/one-time-code.entity';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { FindOneTimeCodeDto } from '../../application/dto/find-one-time-code.dto';
-import { VerificationType } from 'src/shared/enums/verification-type.enum';
+import { VerificationType } from 'src/shared/domain/enums/verification-type.enum';
 import { MetadataVO } from '../../domain/value-objects/metadata.vo';
 
 @Injectable()
