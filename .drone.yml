@@ -18,15 +18,22 @@ steps:
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
+
+      - name: project-files
+        path: /app
     commands:
-      - cd /home/cedraz-ubuntu-2/Documentos/deploys/octochord
-      - docker compose pull
-      - docker compose up -d --remove-orphans
+      - cd /app
+
+      - docker-compose pull
+      - docker-compose up -d --remove-orphans
 
 volumes:
   - name: dockersock
     host:
       path: /var/run/docker.sock
+  - name: project-files
+    host:
+      path: /home/cedraz-ubuntu-2/Documentos/deploys/octochord
 
 trigger:
   branch:
