@@ -4,22 +4,16 @@ import {
   Body,
   Headers,
   UseGuards,
-  Request,
   NotFoundException,
 } from '@nestjs/common';
 import { PushEvent } from '@octokit/webhooks-types';
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiHideProperty,
-} from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
-import { Request as ExpressRequest } from 'express';
-import { JwtPayload } from 'src/common/types/jwt-payload.interface';
-import { ErrorMessagesHelper } from 'src/helpers/error-messages.helper';
+import { ApiBearerAuth, ApiHideProperty } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/modules/auth/application/guards/access-token-auth.guard';
+import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
 import { IntegrationService } from '../application/integration.service';
 import { CreateIntegrationDto } from '../application/dto/create-integration.dto';
-import { IntegrationEntity } from '../domain/entities/integration.entity';
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
+import { TAuthenticatedUser } from 'src/shared/types/authenticated-user';
 
 @Controller('integration')
 export class IntegrationController {
@@ -28,12 +22,10 @@ export class IntegrationController {
   @Post()
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @ApiCreatedResponse({ type: IntegrationEntity })
   create(
     @Body() createIntegrationDto: CreateIntegrationDto,
-    @Request() req: ExpressRequest,
+    @CurrentUser() user: TAuthenticatedUser,
   ) {
-    const user = req.user as JwtPayload;
     return this.integrationService.create(user.sub, createIntegrationDto);
   }
 

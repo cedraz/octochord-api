@@ -1,7 +1,7 @@
 import { OneTimeCodeEntity } from '../domain/entities/one-time-code.entity';
 import { CreateOneTimeCodeDto } from './dto/create-one-time-code.dto';
-import { ValidateOneTimeCodeDto } from './dto/validate-one-time-code.dto';
-import { VerifyUserAccountDto } from './dto/verify-user-account.dto';
+import { FindOneTimeCodeDto } from './dto/find-one-time-code.dto';
+import { ValidateResponseDto } from './dto/validate-response.dto';
 
 export abstract class OneTimeCodeServiceAPI {
   abstract createOneTimeCode(params: {
@@ -10,27 +10,17 @@ export abstract class OneTimeCodeServiceAPI {
     expiresIn?: Date;
   }): Promise<Omit<OneTimeCodeEntity, 'code'>>;
 
-  abstract validateChangeEmailRequest(
-    validateOneTimeCodeDto: ValidateOneTimeCodeDto,
-  ): Promise<{
-    message: string;
-    accessToken: string;
-    refresh_token: string;
-  }>;
-
   abstract validateOneTimeCode(
-    validateOneTimeCodeDto: ValidateOneTimeCodeDto,
-  ): Promise<{ token: string }>;
-
-  abstract verifyUserAccount(
-    verifyUserAccountDto: VerifyUserAccountDto,
-  ): Promise<boolean>;
+    validateOneTimeCodeDto: FindOneTimeCodeDto,
+  ): Promise<ValidateResponseDto>;
 
   abstract findByIdentifier(
-    identifier: string,
+    findOneTimeCodeDto: FindOneTimeCodeDto,
   ): Promise<OneTimeCodeEntity | null>;
 
   abstract isOneTimeCodeExpired(oneTimeCodeEntity: OneTimeCodeEntity): boolean;
 
   abstract getOneTimeCodeExpirationTime(): Date;
+
+  abstract delete(id: string): Promise<void>;
 }

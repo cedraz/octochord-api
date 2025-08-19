@@ -3,7 +3,7 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { ErrorMessagesHelper } from 'src/helpers/error-messages.helper';
+import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
 import {
   TViaCepErrorResponse,
   TViaCepResponse,

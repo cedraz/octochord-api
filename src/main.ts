@@ -1,11 +1,10 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { PrismaErrorsInterceptor } from './prisma/prisma-errors.interceptor';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
-import { CustomLogger } from './logger/logger.service';
-import { GlobalErrorFilter } from './common/filters/global-error.filter';
+import { CustomLogger } from './shared/application/logger.service';
+import { GlobalErrorFilter } from './shared/filters/global-error.filter';
 import { AppModule } from './app.module';
-import { env } from './config/env-validation';
+import { env } from './shared/config/env.schema';
 
 async function bootstrap() {
   console.time('server-started');
@@ -16,16 +15,14 @@ async function bootstrap() {
     logger,
   });
 
-  // Cors
   app.enableCors({
-    origin: '*', // Ou especifique domínios específicos em vez de '*'
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 204,
     credentials: true,
   });
 
-  // Swagger
   const config = new DocumentBuilder()
     .setTitle('Nest API Template Prisma API Docs')
     .setDescription('The Nest API Template Prisma API description')
@@ -41,7 +38,6 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);
 
-  // Pipes
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -51,16 +47,10 @@ async function bootstrap() {
     }),
   );
 
-  // Filters
   app.useGlobalFilters(new GlobalErrorFilter(logger));
 
-  // Interceptors
-  app.useGlobalInterceptors(
-    new PrismaErrorsInterceptor(),
-    new ClassSerializerInterceptor(app.get(Reflector)),
-  );
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  // Start
   const port = env.PORT;
   await app.listen(port, '0.0.0.0');
 

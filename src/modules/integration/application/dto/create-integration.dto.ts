@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsOptional, IsString, IsUrl, Matches } from 'class-validator';
-import { ErrorMessagesHelper } from 'src/helpers/error-messages.helper';
+import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
 import { CreateEmailIntegrationDto } from './create-email-integration.dto';
 
 export class CreateIntegrationDto {

@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { JobsModule } from 'src/jobs/jobs.module';
 import { OneTimeCodeService } from './application/one-time-code.service';
 import { OneTimeCodeController } from './presentation/one-time-code.controller';
 import { OneTimeCodeRepository } from './domain/one-time-code.repository';
 import { OneTimeCodePrismaRepository } from './infra/implementations/one-time-code-prisma.repository';
-import { OTC_SERVICE_TOKEN } from 'src/common/tokens/tokens';
-import { SharedModule } from 'src/common/modules/shared.module';
+import { OTC_SERVICE_TOKEN } from 'src/shared/tokens/tokens';
+import { MailerModule } from 'src/providers/mailer/mailer.module';
 
 @Module({
   providers: [
@@ -20,6 +19,6 @@ import { SharedModule } from 'src/common/modules/shared.module';
   ],
   exports: [OTC_SERVICE_TOKEN],
   controllers: [OneTimeCodeController],
-  imports: [SharedModule, JobsModule],
+  imports: [MailerModule],
 })
 export class OneTimeCodeModule {}

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { IntegrationRepository } from '../../domain/integration.repository';
 import { CreateIntegrationDto } from '../../application/dto/create-integration.dto';
 import { IntegrationEntity } from '../../domain/entities/integration.entity';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { CreateEmailIntegrationDto } from '../../application/dto/create-email-integration.dto';
 import { EmailIntegrationEntity } from '../../domain/entities/email-integration.entity';
 

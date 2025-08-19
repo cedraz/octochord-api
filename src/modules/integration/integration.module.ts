@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { JobsModule } from 'src/jobs/jobs.module';
 import { IntegrationController } from './presentation/integration.controller';
 import { IntegrationService } from './application/integration.service';
 import { IntegrationRepository } from './domain/integration.repository';
 import { IntegrationPrismaRepository } from './infra/implementations/integration-prisma.repository';
+import { MailerModule } from 'src/providers/mailer/mailer.module';
+import { DiscordModule } from 'src/providers/discord/discord.module';
 
 @Module({
   controllers: [IntegrationController],
@@ -14,6 +15,6 @@ import { IntegrationPrismaRepository } from './infra/implementations/integration
     },
     IntegrationService,
   ],
-  imports: [JobsModule],
+  imports: [MailerModule, DiscordModule],
 })
 export class IntegrationModule {}

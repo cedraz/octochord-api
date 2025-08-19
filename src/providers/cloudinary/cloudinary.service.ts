@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UploadApiResponse, UploadApiErrorResponse, v2 } from 'cloudinary';
-import { ErrorMessagesHelper } from 'src/helpers/error-messages.helper';
+import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
 import { Readable } from 'stream';
 
 @Injectable()

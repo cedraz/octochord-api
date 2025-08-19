@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { VerificationType } from 'src/common/enums/verification-type.enum';
+import { VerificationType } from 'src/shared/domain/enums/verification-type.enum';
 
 export class FindOneTimeCodeDto {
   @IsString()

@@ -1,0 +1,35 @@
+kind: pipeline
+type: docker
+name: deploy-octochord-api
+
+steps:
+  - name: build-and-push
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      repo: icarocedraz/octochord-api
+      tags: latest
+
+  - name: deploy-to-server
+    image: docker/compose:1.29.2
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    commands:
+      - cd /home/cedraz-ubuntu-2/Documentos/deploys/octochord
+      - docker-compose pull api
+      - docker-compose up -d --remove-orphans api
+
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+
+trigger:
+  branch:
+    - main
+  event:
+    - push

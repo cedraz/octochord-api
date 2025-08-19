@@ -12,7 +12,7 @@ model Integration {
   user             User              @relation(fields: [userId], references: [id])
   emailIntegration EmailIntegration?
 
-  @@index([hookId])
+  @@index([userId])
   @@map("integrations")
 }
 
@@ -37,5 +37,6 @@ model DiscordWebhook {
   integration Integration @relation(fields: [hookId], references: [hookId])
 
   @@unique([discordWebhookURL, hookId])
+  @@index([hookId])
   @@map("discord_webhooks")
 }

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { OneTimeCodeRepository } from '../../domain/one-time-code.repository';
 import { OneTimeCodeEntity } from '../../domain/entities/one-time-code.entity';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { FindOneTimeCodeDto } from '../../application/dto/find-one-time-code.dto';
-import { VerificationType } from 'src/common/enums/verification-type.enum';
+import { VerificationType } from 'src/shared/domain/enums/verification-type.enum';
 import { MetadataVO } from '../../domain/value-objects/metadata.vo';
 
 @Injectable()
@@ -39,6 +39,8 @@ export class OneTimeCodePrismaRepository implements OneTimeCodeRepository {
         type: findOneTimeCodeDto.type,
       },
     });
+
+    if (!otc) return null;
 
     return new OneTimeCodeEntity({
       ...otc,
@@ -76,5 +78,14 @@ export class OneTimeCodePrismaRepository implements OneTimeCodeRepository {
     await this.prisma.oneTimeCode.delete({
       where: { id },
     });
+  }
+
+  async deleteExpiredCodes(): Promise<number> {
+    const now = new Date();
+    const deletedOTCs = await this.prisma.oneTimeCode.deleteMany({
+      where: { expiresAt: { lt: now } },
+    });
+
+    return deletedOTCs.count;
   }
 }

@@ -1,4 +1,4 @@
-import { PaginationResultDto } from 'src/common/entities/pagination-result.entity';
+import { PaginationResultDto } from 'src/shared/domain/entities/pagination-result.entity';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from '../application/dto/update-user.dto';
 import { UserPaginationDto } from '../application/dto/user.pagination.dto';

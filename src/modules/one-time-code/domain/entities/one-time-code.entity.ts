@@ -1,4 +1,4 @@
-import { VerificationType } from 'src/common/enums/verification-type.enum';
+import { VerificationType } from 'src/shared/domain/enums/verification-type.enum';
 import { MetadataVO } from '../value-objects/metadata.vo';
 
 export class OneTimeCodeEntity {
