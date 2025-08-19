@@ -18,7 +18,7 @@
   <img src="https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=white" />
 </p>
 
-> Uma API robusta para monitoramento de saúde de APIs e integrações com GitHub e Discord
+> Uma API robusta para monitoramento de saúde de APIs e integrações com GitHub e Discord TESTANDO
 
 [![NestJS](https://img.shields.io/badge/NestJS-11.0.1-red.svg)](https://nestjs.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-6.9.0-blue.svg)](https://www.prisma.io/)
