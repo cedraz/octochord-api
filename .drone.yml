@@ -20,8 +20,8 @@ steps:
         path: /var/run/docker.sock
     commands:
       - cd /home/cedraz-ubuntu-2/Documentos/deploys/octochord
-      - docker-compose pull api
-      - docker-compose up -d --remove-orphans api
+      - docker compose pull
+      - docker compose up -d --remove-orphans
 
 volumes:
   - name: dockersock
