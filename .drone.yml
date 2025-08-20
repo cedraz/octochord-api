@@ -26,6 +26,7 @@ steps:
       - apk add --no-cache docker-cli-compose
       - cd /app
       - docker compose -p octochord --env-file .env.prod pull
+      - docker compose -p octochord --env-file .env.prod down --remove-orphans || true
       - docker compose -p octochord --env-file .env.prod up -d --force-recreate --remove-orphans
 
 volumes:
