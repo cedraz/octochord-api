@@ -28,12 +28,9 @@ steps:
         - icarocedraz/octochord-api:cache-${DRONE_BRANCH}
         - icarocedraz/octochord-api:cache-main
       cache_to: icarocedraz/octochord-api:cache-${DRONE_BRANCH},mode=max
-      # Configurações para build mais rápido
       build_args:
         - NODE_ENV=production
-      # Configuração para builds multiplataforma mais eficientes
       platform: linux/amd64
-      # Força o uso do buildx
       use_buildx: true
 
   - name: save-cache
