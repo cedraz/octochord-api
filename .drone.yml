@@ -12,6 +12,8 @@ steps:
         from_secret: docker_password
       repo: icarocedraz/octochord-api
       tags: latest
+      cache_from: icarocedraz/octochord-api:latest
+      cache_to: icarocedraz/octochord-api:latest,mode=max
 
   - name: deploy-to-server
     image: docker/compose:v2.24.6
