@@ -32,4 +32,4 @@ COPY --from=build /usr/app/package.json ./package.json
 COPY --from=build /usr/app/dist ./dist
 COPY --from=prunner /usr/app/node_modules ./node_modules
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
