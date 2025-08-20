@@ -22,8 +22,8 @@ steps:
         path: /app
     commands:
       - cd /app
-      - docker-compose -p octochord --env-file .env.prod pull
-      - docker-compose -p octochord --env-file .env.prod up -d --force-recreate --remove-orphans
+      - docker compose -p octochord --env-file .env.prod pull
+      - docker compose -p octochord --env-file .env.prod up -d --force-recreate --remove-orphans
 
 volumes:
   - name: dockersock
