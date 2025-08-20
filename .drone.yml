@@ -3,25 +3,50 @@ type: docker
 name: deploy-octochord-api
 
 steps:
+  - name: restore-cache
+    image: drillster/drone-volume-cache
+    settings:
+      restore: true
+      mount:
+        - ./node_modules
+    volumes:
+      - name: cache
+        path: /cache
+
   - name: build-and-push
     image: plugins/docker
     settings:
-      # As credenciais são lidas automaticamente daqui
       username:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      # O repositório para onde a imagem será enviada
       repo: icarocedraz/octochord-api
-      # As tags que serão aplicadas à nova imagem
       tags:
         - latest
-        - '${DRONE_COMMIT_SHA:0:7}' # Uma tag única para cada commit
-      # A estratégia de cache inteligente que havíamos discutido
+        - ${DRONE_COMMIT_SHA:0:7}
       cache_from:
         - icarocedraz/octochord-api:cache-${DRONE_BRANCH}
         - icarocedraz/octochord-api:cache-main
       cache_to: icarocedraz/octochord-api:cache-${DRONE_BRANCH},mode=max
+      # Configurações para build mais rápido
+      build_args:
+        - NODE_ENV=production
+      # Configuração para builds multiplataforma mais eficientes
+      platform: linux/amd64
+      # Força o uso do buildx
+      use_buildx: true
+
+  - name: save-cache
+    image: drillster/drone-volume-cache
+    settings:
+      rebuild: true
+      mount:
+        - ./node_modules
+    volumes:
+      - name: cache
+        path: /cache
+    when:
+      status: [success]
 
   - name: deploy-to-server
     image: docker:23
@@ -44,6 +69,9 @@ volumes:
   - name: project-files
     host:
       path: /home/cedraz-ubuntu-2/Documentos/deploys/octochord
+  - name: cache
+    host:
+      path: /tmp/cache
 
 trigger:
   branch:
