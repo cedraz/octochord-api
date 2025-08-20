@@ -14,7 +14,7 @@ steps:
       tags: latest
 
   - name: deploy-to-server
-    image: docker/plugin-docker-compose:linux-amd64
+    image: docker/compose:v2.24.6
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
