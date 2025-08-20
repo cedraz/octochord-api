@@ -16,7 +16,7 @@ steps:
       cache_to: icarocedraz/octochord-api:latest,mode=max
 
   - name: deploy-to-server
-    image: docker/compose:latest
+    image: docker/compose:2.20.2
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
@@ -24,8 +24,8 @@ steps:
         path: /app
     commands:
       - cd /app
-      - docker-compose -p octochord --env-file .env.prod pull
-      - docker-compose -p octochord --env-file .env.prod up -d --force-recreate --remove-orphans
+      - docker compose -p octochord --env-file .env.prod pull
+      - docker compose -p octochord --env-file .env.prod up -d --force-recreate --remove-orphans
 
 volumes:
   - name: dockersock
