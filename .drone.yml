@@ -11,18 +11,16 @@ steps:
       - name: project-files
         path: /app
     environment:
-      DOCKER_BUILDKIT: 1
-      COMPOSE_DOCKER_CLI_BUILD: 1
+      DOCKER_USERNAME:
+        from_secret: docker_username
+      DOCKER_PASSWORD:
+        from_secret: docker_password
     commands:
       - cd /app
-      # login no registry
-      - docker login -u $${DOCKER_USERNAME} -p $${DOCKER_PASSWORD}
-      # criar/usar builder (ignora erro se já existir)
+      - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
       - docker buildx create --name mybuilder --use || true
       - docker buildx inspect mybuilder --bootstrap
-      # tenta puxar o cache (opcional, acelera primeiro passo)
       - docker pull icarocedraz/octochord-api:cache || true
-      # buildx com cache remoto (registry) e push da imagem final
       - docker buildx build --platform linux/amd64 \
         --push \
         --tag icarocedraz/octochord-api:latest \
@@ -30,7 +28,6 @@ steps:
         --cache-from=type=registry,ref=icarocedraz/octochord-api:cache \
         --cache-to=type=registry,ref=icarocedraz/octochord-api:cache,mode=max \
         .
-    secrets: [docker_username, docker_password]
 
   - name: deploy-to-server
     image: docker:23
@@ -40,11 +37,11 @@ steps:
       - name: project-files
         path: /app
     commands:
-      - apk add --no-cache docker-cli-compose
+      - apk add --no-cache docker-compose
       - cd /app
-      - docker compose -p octochord --env-file .env.prod pull
-      - docker compose -p octochord --env-file .env.prod down --remove-orphans || true
-      - docker compose -p octochord --env-file .env.prod up -d --force-recreate --remove-orphans
+      - docker-compose -p octochord --env-file .env.prod pull
+      - docker-compose -p octochord --env-file .env.prod down --remove-orphans || true
+      - docker-compose -p octochord --env-file .env.prod up -d --force-recreate --remove-orphans
 
 volumes:
   - name: dockersock
