@@ -16,7 +16,7 @@ steps:
       cache_to: icarocedraz/octochord-api:latest,mode=max
 
   - name: deploy-to-server
-    image: docker/compose:v2.24.6
+    image: docker/compose:latest
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
