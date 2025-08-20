@@ -21,12 +21,13 @@ steps:
       - docker buildx create --name mybuilder --use || true
       - docker buildx inspect mybuilder --bootstrap
       - docker pull icarocedraz/octochord-api:cache || true
-      - docker buildx build --platform linux/amd64 \
-        --push \
-        --tag icarocedraz/octochord-api:latest \
-        --tag icarocedraz/octochord-api:${DRONE_COMMIT_SHA:0:7} \
-        --cache-from=type=registry,ref=icarocedraz/octochord-api:cache \
-        --cache-to=type=registry,ref=icarocedraz/octochord-api:cache,mode=max \
+      - >
+        docker buildx build --platform linux/amd64
+        --push
+        --tag icarocedraz/octochord-api:latest
+        --tag icarocedraz/octochord-api:${DRONE_COMMIT_SHA:0:7}
+        --cache-from=type=registry,ref=icarocedraz/octochord-api:cache
+        --cache-to=type=registry,ref=icarocedraz/octochord-api:cache,mode=max
         .
 
   - name: deploy-to-server
