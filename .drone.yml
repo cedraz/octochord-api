@@ -16,13 +16,14 @@ steps:
       cache_to: icarocedraz/octochord-api:latest,mode=max
 
   - name: deploy-to-server
-    image: docker/compose:2.20.2
+    image: docker:23
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
       - name: project-files
         path: /app
     commands:
+      - apk add --no-cache docker-cli-compose
       - cd /app
       - docker compose -p octochord --env-file .env.prod pull
       - docker compose -p octochord --env-file .env.prod up -d --force-recreate --remove-orphans
