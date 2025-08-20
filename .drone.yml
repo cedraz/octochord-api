@@ -28,6 +28,7 @@ steps:
         - icarocedraz/octochord-api:cache-${DRONE_BRANCH}
         - icarocedraz/octochord-api:cache-main
       cache_to: icarocedraz/octochord-api:cache-${DRONE_BRANCH},mode=max
+      use_buildx: true
       build_args:
         - NODE_ENV=production
       platform: linux/amd64
