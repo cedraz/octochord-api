@@ -4,44 +4,35 @@ name: deploy-octochord-api
 
 steps:
   - name: build-and-push
-    image: docker:23
-    volumes:
-      - name: dockersock
-        path: /var/run/docker.sock
-      - name: project-files
-        path: /app
-    environment:
-      DOCKER_USERNAME:
+    image: plugins/docker
+    settings:
+      # As credenciais são lidas automaticamente daqui
+      username:
         from_secret: docker_username
-      DOCKER_PASSWORD:
+      password:
         from_secret: docker_password
-    commands:
-      - cd /app
-      - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-      - docker buildx create --name mybuilder --use || true
-      - docker buildx inspect mybuilder --bootstrap
-      - docker pull icarocedraz/octochord-api:cache || true
-      - >
-        docker buildx build --platform linux/amd64
-        --push
-        --tag icarocedraz/octochord-api:latest
-        --tag icarocedraz/octochord-api:${DRONE_COMMIT_SHA:0:7}
-        --cache-from=type=registry,ref=icarocedraz/octochord-api:cache
-        --cache-to=type=registry,ref=icarocedraz/octochord-api:cache,mode=max
-        .
+      # O repositório para onde a imagem será enviada
+      repo: icarocedraz/octochord-api
+      # As tags que serão aplicadas à nova imagem
+      tags:
+        - latest
+        - '${DRONE_COMMIT_SHA:0:7}' # Uma tag única para cada commit
+      # A estratégia de cache inteligente que havíamos discutido
+      cache_from:
+        - icarocedraz/octochord-api:cache-${DRONE_BRANCH}
+        - icarocedraz/octochord-api:cache-main
+      cache_to: icarocedraz/octochord-api:cache-${DRONE_BRANCH},mode=max
 
   - name: deploy-to-server
-    image: docker:23
+    image: docker/compose:latest
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
       - name: project-files
         path: /app
     commands:
-      - apk add --no-cache docker-compose
       - cd /app
       - docker-compose -p octochord --env-file .env.prod pull
-      - docker-compose -p octochord --env-file .env.prod down --remove-orphans || true
       - docker-compose -p octochord --env-file .env.prod up -d --force-recreate --remove-orphans
 
 volumes:
