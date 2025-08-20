@@ -54,6 +54,7 @@
     "nodemailer": "^6.9.14",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
+    "passport-jwt": "^4.0.1",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
@@ -77,7 +78,6 @@
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.3.0",
     "jest": "^29.5.0",
-    "passport-jwt": "^4.0.1",
     "prettier": "^3.4.2",
     "prisma": "^6.9.0",
     "source-map-support": "^0.5.21",

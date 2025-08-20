@@ -4,16 +4,33 @@ name: deploy-octochord-api
 
 steps:
   - name: build-and-push
-    image: plugins/docker
-    settings:
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      repo: icarocedraz/octochord-api
-      tags: latest
-      cache_from: icarocedraz/octochord-api:latest
-      cache_to: icarocedraz/octochord-api:latest,mode=max
+    image: docker:23
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+      - name: project-files
+        path: /app
+    environment:
+      DOCKER_BUILDKIT: 1
+      COMPOSE_DOCKER_CLI_BUILD: 1
+    commands:
+      - cd /app
+      # login no registry
+      - docker login -u $${DOCKER_USERNAME} -p $${DOCKER_PASSWORD}
+      # criar/usar builder (ignora erro se já existir)
+      - docker buildx create --name mybuilder --use || true
+      - docker buildx inspect mybuilder --bootstrap
+      # tenta puxar o cache (opcional, acelera primeiro passo)
+      - docker pull icarocedraz/octochord-api:cache || true
+      # buildx com cache remoto (registry) e push da imagem final
+      - docker buildx build --platform linux/amd64 \
+        --push \
+        --tag icarocedraz/octochord-api:latest \
+        --tag icarocedraz/octochord-api:${DRONE_COMMIT_SHA:0:7} \
+        --cache-from=type=registry,ref=icarocedraz/octochord-api:cache \
+        --cache-to=type=registry,ref=icarocedraz/octochord-api:cache,mode=max \
+        .
+    secrets: [docker_username, docker_password]
 
   - name: deploy-to-server
     image: docker:23

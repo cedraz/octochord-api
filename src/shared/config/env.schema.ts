@@ -1,7 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import {
   IsBoolean,
-  IsEmail,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -17,7 +16,7 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   CLOUDINARY_URL: string;
 
-  @IsEmail()
+  @IsString()
   GOOGLE_CLIENT_EMAIL: string;
 
   @IsString()
