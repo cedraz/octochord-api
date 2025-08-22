@@ -3,14 +3,14 @@ import * as bcrypt from 'bcryptjs';
 export class UserEntity {
   id: string;
   email: string;
-  phone: string;
   name: string;
   passwordHash: string;
   createdAt: Date;
   updatedAt: Date;
-  deletedAt?: Date;
-  image?: string;
-  emailVerifiedAt?: Date;
+  phone?: string | null;
+  deletedAt?: Date | null;
+  image?: string | null;
+  emailVerifiedAt?: Date | null;
 
   static async createWithPassword(
     props: Partial<UserEntity> & { password: string },

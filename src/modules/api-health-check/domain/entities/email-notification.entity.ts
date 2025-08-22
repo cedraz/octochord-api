@@ -3,7 +3,7 @@ export class EmailNotificationEntity {
   emails: string[];
   createdAt: Date;
   updatedAt: Date;
-  deletedAt?: Date;
+  deletedAt?: Date | null;
   apiHealthCheckId: string;
 
   constructor(partial: Partial<EmailNotificationEntity>) {

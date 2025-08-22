@@ -29,6 +29,20 @@ export class OneTimeCodePrismaRepository implements OneTimeCodeRepository {
     });
   }
 
+  async findById(id: string): Promise<OneTimeCodeEntity | null> {
+    const otc = await this.prisma.oneTimeCode.findUnique({
+      where: { id },
+    });
+
+    if (!otc) return null;
+
+    return new OneTimeCodeEntity({
+      ...otc,
+      type: otc.type as VerificationType,
+      metadata: otc.metadata ? MetadataVO.fromPrismaValue(otc.metadata) : null,
+    });
+  }
+
   async findByIdentifier(
     findOneTimeCodeDto: FindOneTimeCodeDto,
   ): Promise<OneTimeCodeEntity | null> {

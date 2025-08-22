@@ -2,9 +2,9 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { env } from 'src/shared/config/env.schema';
-import { TAccessTokenPayload } from 'src/shared/types/jwt-payload';
 import { TAuthenticatedUser } from 'src/shared/types/authenticated-user';
 import { StrategiesHelper } from 'src/shared/helpers/strategies.helper';
+import { TRefreshTokenPayload } from 'src/shared/types/jwt-payload';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -19,7 +19,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     });
   }
 
-  validate(payload: TAccessTokenPayload): TAuthenticatedUser {
+  validate(payload: TRefreshTokenPayload): TAuthenticatedUser {
     return { sub: payload.sub };
   }
 }

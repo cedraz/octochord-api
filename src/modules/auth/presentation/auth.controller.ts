@@ -5,6 +5,8 @@ import {
   Delete,
   UseGuards,
   Patch,
+  UnauthorizedException,
+  Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../application/auth.service';
@@ -15,23 +17,28 @@ import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { TAuthenticatedUser } from 'src/shared/types/authenticated-user';
 import { ChangePasswordDto } from '../application/dto/change-password.dto';
 import { ChangeEmailDto } from '../application/dto/change-email.dto';
-import { ValidateOneTimeCodeDto } from 'src/modules/one-time-code/application/dto/validate-one-time-code.dto';
+import { ValidateOneTimeCodeDto } from 'src/shared/application/dto/validate-one-time-code.dto';
+import { RecoverPasswordDto } from '../application/dto/recover-password.dto';
+import { VerificationType } from 'src/shared/domain/enums/verification-type.enum';
+import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
+import { VerifyEmailDto } from '../application/dto/verify-email.dto';
+import { Request } from 'express';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('user')
+  @Post('login')
   @ApiOperation({ summary: 'User login' })
-  login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  login(@Body() loginDto: LoginDto, @Req() req: Request) {
+    return this.authService.login(loginDto, req);
   }
 
   @Post('/refresh')
   @ApiOperation({ summary: 'Refresh token' })
-  userRefresh(@Body() refreshTokenDto: RefreshTokenDto) {
-    return this.authService.refresh(refreshTokenDto);
+  userRefresh(@Body() refreshTokenDto: RefreshTokenDto, @Req() req: Request) {
+    return this.authService.refresh(refreshTokenDto, req);
   }
 
   @Delete('/logout')
@@ -44,23 +51,8 @@ export class AuthController {
 
   @Post('verify-email')
   @ApiOperation({ summary: 'Verify an email address using a one-time code' })
-  verifyEmail(@Body() dto: ValidateOneTimeCodeDto) {
+  verifyEmail(@Body() dto: VerifyEmailDto) {
     return this.authService.verifyEmail(dto);
-  }
-
-  @Patch('/change-password')
-  @ApiOperation({ summary: 'Change logged user password' })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  changePassword(
-    @CurrentUser() user: TAuthenticatedUser,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ) {
-    return this.authService.changePassword(
-      user.sub,
-      changePasswordDto.oldPassword,
-      changePasswordDto.newPassword,
-    );
   }
 
   @Patch('/change-email')
@@ -79,7 +71,44 @@ export class AuthController {
 
   @Post('change-email-validation')
   @ApiOperation({ summary: 'Validate a verification request for change email' })
-  validateChangeEmailOTC(@Body() dto: ValidateOneTimeCodeDto) {
-    return this.authService.validateChangeEmailOTC(dto);
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  validateChangeEmailOTC(
+    @Body() dto: ValidateOneTimeCodeDto,
+    @CurrentUser() user: TAuthenticatedUser,
+  ) {
+    return this.authService.validateChangeEmailOTC(user.sub, dto);
+  }
+
+  @Patch('/recover-password')
+  @ApiOperation({ summary: 'Recover the user password' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  recoverPassword(
+    @CurrentUser() user: TAuthenticatedUser,
+    @Body() recoverPasswordDto: RecoverPasswordDto,
+  ) {
+    if (user.otcType !== VerificationType.PASSWORD_RESET) {
+      throw new UnauthorizedException(
+        ErrorMessagesHelper.INVALID_VERIFICATION_REQUEST,
+      );
+    }
+
+    return this.authService.recoverPassword(recoverPasswordDto);
+  }
+
+  @Patch('/change-password')
+  @ApiOperation({ summary: 'Change logged user password' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  changePassword(
+    @CurrentUser() user: TAuthenticatedUser,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.authService.changePassword(
+      user.sub,
+      changePasswordDto.oldPassword,
+      changePasswordDto.newPassword,
+    );
   }
 }

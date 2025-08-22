@@ -6,7 +6,7 @@ import { OneTimeCodeServiceAPI } from './one-time-code.service.interface';
 import { SendEmailQueueService } from 'src/providers/mailer/queue/send-email-queue.service';
 import { CreateOneTimeCodeDto } from './dto/create-one-time-code.dto';
 import { FindOneTimeCodeDto } from './dto/find-one-time-code.dto';
-import { ValidateOneTimeCodeDto } from './dto/validate-one-time-code.dto';
+import { ValidateOneTimeCodeDto } from '../../../shared/application/dto/validate-one-time-code.dto';
 import { env } from 'process';
 import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
 import { ValidateResponseDto } from './dto/validate-response.dto';
@@ -20,7 +20,7 @@ export class OneTimeCodeService implements OneTimeCodeServiceAPI {
   ) {}
 
   getOneTimeCodeExpirationTime() {
-    return new Date(new Date().getTime() + 5 * 60 * 1000); // 5 minutes
+    return new Date(new Date().getTime() + 15 * 60 * 1000); // 15 minutes
   }
 
   isOneTimeCodeExpired(oneTimeCodeEntity: OneTimeCodeEntity): boolean {
@@ -40,19 +40,19 @@ export class OneTimeCodeService implements OneTimeCodeServiceAPI {
   async createOneTimeCode({
     createOneTimeCodeDto,
     codeDigits,
-    expiresIn,
+    expirationDate,
   }: {
     createOneTimeCodeDto: CreateOneTimeCodeDto;
     codeDigits?: string;
-    expiresIn?: Date;
+    expirationDate?: Date;
   }) {
     const code = codeDigits
       ? codeDigits
       : Math.floor(100000 + Math.random() * 900000).toString();
 
-    const expiresAt = expiresIn
-      ? expiresIn
-      : this.getOneTimeCodeExpirationTime(); // 5 minutes
+    const expiresAt = expirationDate
+      ? expirationDate
+      : this.getOneTimeCodeExpirationTime(); // 15 minutes
 
     const otc = new OneTimeCodeEntity({
       identifier: createOneTimeCodeDto.identifier,
@@ -93,9 +93,7 @@ export class OneTimeCodeService implements OneTimeCodeServiceAPI {
 
     const tokenPayload = {
       sub: '',
-      email: validateOneTimeCodeDto.identifier,
-      type: validateOneTimeCodeDto.type,
-      expiresIn: new Date(new Date().getTime() + 5 * 60 * 1000), // 5 minutes
+      otcType: validateOneTimeCodeDto.type,
     };
 
     return {
@@ -106,7 +104,13 @@ export class OneTimeCodeService implements OneTimeCodeServiceAPI {
     };
   }
 
-  delete(id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
+    const otc = await this.oneTimeCodeRepository.findById(id);
+
+    if (!otc) {
+      throw new ConflictException(ErrorMessagesHelper.OTC_NOT_FOUND);
+    }
+
     return this.oneTimeCodeRepository.delete(id);
   }
 }

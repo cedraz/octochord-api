@@ -3,8 +3,8 @@ export class RefreshTokenEntity {
   hashedToken: string;
   expiresAt: Date;
   isActive: boolean;
-  ipAddress?: string;
-  userAgent?: string;
+  ipAddress?: string | null;
+  userAgent?: string | null;
   createdAt: Date;
   updatedAt: Date;
   userId: string;

@@ -1,6 +1,8 @@
+import { VerificationType } from '../domain/enums/verification-type.enum';
+
 export type TAccessTokenPayload = {
   sub: string;
-  expiresIn: Date;
+  otcType?: VerificationType;
   iat: number;
   exp: number;
   iss: string;

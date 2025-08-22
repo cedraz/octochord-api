@@ -20,6 +20,6 @@ export class AccessTokenStrategy extends PassportStrategy(
   }
 
   validate(payload: TAccessTokenPayload): TAuthenticatedUser {
-    return { sub: payload.sub };
+    return { sub: payload.sub, otcType: payload.otcType };
   }
 }

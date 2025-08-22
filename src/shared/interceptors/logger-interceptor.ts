@@ -82,7 +82,12 @@ export class LoggerInterceptor implements NestInterceptor {
       statusCode,
       requestBody,
     };
-    this.logger.log(`${method} ${endpoint} - ${duration}ms`, 'HTTP', logObject);
+    const maskedData: Record<string, any> = this.maskSensitiveData(logObject);
+    this.logger.log(
+      `${method} ${endpoint} - ${duration}ms`,
+      'HTTP',
+      maskedData,
+    );
 
     // if (statusCode === 201) {
     //   this.discordService
@@ -126,5 +131,28 @@ export class LoggerInterceptor implements NestInterceptor {
     //   .catch((e) =>
     //     this.logger.error('Failed to send Discord message from Interceptor', e),
     //   );
+  }
+
+  private maskSensitiveData(data: Record<string, any>): any {
+    if (typeof data !== 'object' || data === null) {
+      return data;
+    }
+
+    if (data.requestBody) {
+      const requestBody = data.requestBody as Record<string, any>;
+      if (requestBody.password) {
+        requestBody.password = '***';
+      }
+
+      if (requestBody.confirmPassword) {
+        requestBody.confirmPassword = '***';
+      }
+
+      if (requestBody.newPassword) {
+        requestBody.newPassword = '***';
+      }
+    }
+
+    return data;
   }
 }

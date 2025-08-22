@@ -17,4 +17,6 @@ export abstract class OneTimeCodeRepository {
   abstract delete(id: string): Promise<void>;
 
   abstract deleteExpiredCodes(): Promise<number>;
+
+  abstract findById(id: string): Promise<OneTimeCodeEntity | null>;
 }

@@ -46,26 +46,8 @@ export class UserController {
     description: ErrorMessagesHelper.USER_ALREADY_EXISTS,
   })
   create(@Body() createUserDto: CreateUserDto) {
-    console.log('Creating user with DTO:', createUserDto);
     return this.userService.create(createUserDto);
   }
-
-  // @ApiOperation({ summary: 'Recover password' })
-  // @Post('recover-password')
-  // @ApiOkResponse({ type: OneTimeCodeResponseDto })
-  // @UseGuards(PasswordRecoveryAuthGuard)
-  // @ApiBearerAuth()
-  // recoverPassword(
-  //   @Body() recoverPasswordDto: RecoverPasswordDto,
-  //   @Request() req: ExpressRequest,
-  // ) {
-  //   const user = req.user as JwtPayload;
-  //   console.log('Recovering password for user:', user.email);
-  //   return this.userService.recoverPassword({
-  //     email: user.email,
-  //     password: recoverPasswordDto.password,
-  //   });
-  // }
 
   @ApiOperation({ summary: 'Get logged user profile' })
   @Get('profile')

@@ -23,8 +23,10 @@ import { TRefreshTokenPayload } from 'src/shared/types/jwt-payload';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { MessageResponseDto } from 'src/shared/application/dto/message-response.dto';
 import { OneTimeCodeServiceAPI } from 'src/modules/one-time-code/application/one-time-code.service.interface';
-import { ValidateOneTimeCodeDto } from 'src/modules/one-time-code/application/dto/validate-one-time-code.dto';
-import { OTCMetadata } from 'src/shared/types/metadata';
+import { ValidateOneTimeCodeDto } from 'src/shared/application/dto/validate-one-time-code.dto';
+import { RecoverPasswordDto } from './dto/recover-password.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -37,7 +39,7 @@ export class AuthService {
     private readonly oneTimeCodeService: OneTimeCodeServiceAPI,
   ) {}
 
-  async login(loginDto: LoginDto): Promise<TokenResponseDto> {
+  async login(loginDto: LoginDto, request: Request): Promise<TokenResponseDto> {
     const user = await this.userService.findByEmail(loginDto.email);
 
     if (!user) {
@@ -57,7 +59,12 @@ export class AuthService {
       throw new UnauthorizedException(ErrorMessagesHelper.INVALID_CREDENTIALS);
     }
 
-    const { accessToken, refreshToken } = await this.generateTokens(user.id);
+    console.log(request.headers['user-agent'] || 'unkown');
+
+    const { accessToken, refreshToken } = await this.generateTokens(
+      user.id,
+      request.headers['user-agent'] || 'unkown',
+    );
 
     return {
       accessToken,
@@ -67,6 +74,7 @@ export class AuthService {
 
   async generateTokens(
     userId: string,
+    userAgent: string,
     verificationType?: VerificationType,
   ): Promise<TokenResponseDto> {
     const nanoId = nanoid();
@@ -82,6 +90,8 @@ export class AuthService {
       ),
     ]);
 
+    await this.refreshTokenRepository.deleteMany(userId, userAgent);
+
     const hashedToken = await bcrypt.hash(refreshToken, 6);
 
     await this.refreshTokenRepository.create({
@@ -89,6 +99,7 @@ export class AuthService {
       hashedToken,
       jti: nanoId,
       userId,
+      userAgent,
     });
 
     return {
@@ -97,7 +108,10 @@ export class AuthService {
     };
   }
 
-  async refresh(refreshTokenDto: RefreshTokenDto): Promise<TokenResponseDto> {
+  async refresh(
+    refreshTokenDto: RefreshTokenDto,
+    request: Request,
+  ): Promise<TokenResponseDto> {
     const { refreshToken } = refreshTokenDto;
 
     const payload = this.jwtService.verify<TRefreshTokenPayload>(refreshToken, {
@@ -115,8 +129,10 @@ export class AuthService {
       throw new UnauthorizedException(ErrorMessagesHelper.INVALID_TOKEN);
     }
 
+    const userAgent = request.headers['user-agent'] || 'unkown';
+
     const { accessToken, refreshToken: newRefreshToken } =
-      await this.generateTokens(payload.sub);
+      await this.generateTokens(payload.sub, userAgent);
 
     return {
       accessToken,
@@ -125,18 +141,18 @@ export class AuthService {
   }
 
   async logout(userId: string): Promise<MessageResponseDto> {
-    await this.refreshTokenRepository.logout(userId);
+    await this.refreshTokenRepository.deleteMany(userId);
 
     return { message: 'User logged out successfully' };
   }
 
-  async verifyEmail(
-    validateOneTimeCodeDto: ValidateOneTimeCodeDto,
-  ): Promise<MessageResponseDto> {
+  async verifyEmail(dto: VerifyEmailDto): Promise<MessageResponseDto> {
+    const { identifier, code } = dto;
+
     const oneTimeCode = await this.oneTimeCodeService.findByIdentifier({
-      identifier: validateOneTimeCodeDto.identifier,
-      code: validateOneTimeCodeDto.code,
-      type: validateOneTimeCodeDto.type,
+      identifier: identifier,
+      code: code,
+      type: VerificationType.EMAIL_VERIFICATION,
     });
 
     if (!oneTimeCode || new Date() > oneTimeCode.expiresAt) {
@@ -145,17 +161,18 @@ export class AuthService {
       );
     }
 
-    const user = await this.userService.findByEmail(
-      validateOneTimeCodeDto.identifier,
-    );
+    const user = await this.userService.findByEmail(identifier);
 
-    await this.userService.update(user.id, {
-      emailVerifiedAt: new Date(),
-    });
+    if (!user) {
+      throw new NotFoundException(ErrorMessagesHelper.USER_NOT_FOUND);
+    }
 
-    return {
-      message: 'Email verified successfully',
-    };
+    await Promise.all([
+      this.userService.update(user.id, { emailVerifiedAt: new Date() }),
+      this.oneTimeCodeService.delete(oneTimeCode.id),
+    ]);
+
+    return { message: 'Email verified successfully' };
   }
 
   async createChangeEmailOTC(
@@ -182,11 +199,8 @@ export class AuthService {
       createOneTimeCodeDto: {
         identifier: newEmail,
         type: VerificationType.EMAIL_VERIFICATION,
-        metadata: {
-          userId: user.id,
-        },
       },
-      expiresIn: this.oneTimeCodeService.getOneTimeCodeExpirationTime(),
+      expirationDate: this.oneTimeCodeService.getOneTimeCodeExpirationTime(),
     });
 
     return {
@@ -195,6 +209,7 @@ export class AuthService {
   }
 
   async validateChangeEmailOTC(
+    userId: string,
     validateOneTimeCodeDto: ValidateOneTimeCodeDto,
   ): Promise<MessageResponseDto> {
     const oneTimeCode = await this.oneTimeCodeService.findByIdentifier({
@@ -209,12 +224,6 @@ export class AuthService {
       );
     }
 
-    const metadata = oneTimeCode.metadata as unknown as OTCMetadata;
-
-    if (!metadata || !metadata.userId) {
-      throw new ConflictException(ErrorMessagesHelper.INVALID_METADATA);
-    }
-
     const userWithSameEmail = await this.userService.findByEmail(
       validateOneTimeCodeDto.identifier,
     );
@@ -223,7 +232,7 @@ export class AuthService {
       throw new ConflictException(ErrorMessagesHelper.USER_ALREADY_EXISTS);
     }
 
-    const user = await this.userService.findById(metadata.userId);
+    const user = await this.userService.findById(userId);
 
     if (!user) {
       throw new NotFoundException(ErrorMessagesHelper.USER_NOT_FOUND);
@@ -241,13 +250,11 @@ export class AuthService {
     return { message: 'Email changed successfully' };
   }
 
-  async recoverPassword({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) {
+  async recoverPassword(
+    recoverPasswordDto: RecoverPasswordDto,
+  ): Promise<MessageResponseDto> {
+    const { email, password } = recoverPasswordDto;
+
     const user = await this.userService.findByEmail(email);
 
     if (!user) {
@@ -257,11 +264,9 @@ export class AuthService {
     const salt = await bcrypt.genSalt(8);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const userUpdated = await this.userService.update(user.id, {
+    await this.userService.update(user.id, {
       passwordHash,
     });
-
-    console.log('Password recovered for user:', userUpdated);
 
     return { message: 'Senha alterada com sucesso.' };
   }

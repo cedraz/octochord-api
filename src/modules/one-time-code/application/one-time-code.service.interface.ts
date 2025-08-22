@@ -4,10 +4,14 @@ import { FindOneTimeCodeDto } from './dto/find-one-time-code.dto';
 import { ValidateResponseDto } from './dto/validate-response.dto';
 
 export abstract class OneTimeCodeServiceAPI {
-  abstract createOneTimeCode(params: {
+  abstract createOneTimeCode({
+    createOneTimeCodeDto,
+    codeDigits,
+    expirationDate,
+  }: {
     createOneTimeCodeDto: CreateOneTimeCodeDto;
     codeDigits?: string;
-    expiresIn?: Date;
+    expirationDate?: Date;
   }): Promise<Omit<OneTimeCodeEntity, 'code'>>;
 
   abstract validateOneTimeCode(

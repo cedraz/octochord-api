@@ -8,7 +8,7 @@ export abstract class RefreshTokenRepository {
 
   abstract findByJti(jti: string): Promise<RefreshTokenEntity | null>;
 
-  abstract logout(userId: string): Promise<void>;
+  abstract deleteMany(userId: string, userAgent?: string): Promise<void>;
 
   abstract findAll(userId: string): Promise<RefreshTokenEntity[]>;
 }

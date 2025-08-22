@@ -3,4 +3,6 @@ export class CreateRefreshTokenDto {
   hashedToken: string;
   userId: string;
   expiresAt: Date;
+  userAgent: string;
+  ipAddress?: string;
 }

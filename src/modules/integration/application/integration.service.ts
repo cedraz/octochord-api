@@ -45,7 +45,7 @@ export class IntegrationService {
             subject: `New push event in ${dto.payload.repository.full_name}`,
             message: `
             New push event received for repository: ${dto.payload.repository.full_name}
-            \nCommit: ${dto.payload.head_commit.message}
+            \nCommit: ${dto.payload.head_commit?.message || 'No commit message'}
             \nPusher: ${dto.payload.pusher.name}
           `,
           });
@@ -61,7 +61,7 @@ export class IntegrationService {
       async (discordWebhook) => {
         const content = `
             New push event received for repository: ${dto.payload.repository.full_name}
-            \nCommit: ${dto.payload.head_commit.message}
+            \nCommit: ${dto.payload.head_commit?.message || 'No commit message'}
             \nPusher: ${dto.payload.pusher.name}
         `;
 

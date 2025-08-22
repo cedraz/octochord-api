@@ -9,6 +9,7 @@ import { MailerProvider } from 'src/providers/mailer/mailer.provider';
 import { SendEmailQueueService } from 'src/providers/mailer/queue/send-email-queue.service';
 import { ApiHealthCheckDto } from '../dto/api-health-check.dto';
 import { QueueNames } from 'src/shared/helpers/queue-names.helper';
+import { HttpMethods } from 'src/shared/domain/enums/http-methods.enum';
 
 @Processor(QueueNames.API_HEALTH_CHECK_QUEUE)
 export class ApiHealthCheckConsumerService extends WorkerHost {
@@ -102,32 +103,32 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
     const { email } = apiHealthCheck.user;
 
     switch (data.method) {
-      case 'GET': {
+      case HttpMethods.GET: {
         const response = api.get(data.url);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;
       }
-      case 'POST': {
+      case HttpMethods.POST: {
         const response = api.post(data.url);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;
       }
-      case 'PUT': {
+      case HttpMethods.PUT: {
         const response = api.put(data.url);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;
       }
-      case 'DELETE': {
+      case HttpMethods.DELETE: {
         const response = api.delete(data.url);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;
       }
-      case 'PATCH': {
+      case HttpMethods.PATCH: {
         const response = api.patch(data.url);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;
       }
-      case 'HEAD': {
+      case HttpMethods.HEAD: {
         const response = api.head(data.url);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;

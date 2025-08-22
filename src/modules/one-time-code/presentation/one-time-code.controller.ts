@@ -2,7 +2,7 @@ import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OneTimeCodeResponseDto } from '../application/dto/one-time-code-response.dto';
 import { CreateOneTimeCodeDto } from '../application/dto/create-one-time-code.dto';
-import { ValidateOneTimeCodeDto } from '../application/dto/validate-one-time-code.dto';
+import { ValidateOneTimeCodeDto } from '../../../shared/application/dto/validate-one-time-code.dto';
 import { OneTimeCodeServiceAPI } from '../application/one-time-code.service.interface';
 import { OTC_SERVICE_TOKEN } from 'src/shared/tokens/tokens';
 

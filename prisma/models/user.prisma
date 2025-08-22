@@ -3,7 +3,7 @@ model User {
   name            String
   passwordHash    String    @map("password_hash")
   email           String    @unique
-  phone           String
+  phone           String?
   image           String?
   emailVerifiedAt DateTime? @map("email_verified_at")
 

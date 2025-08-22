@@ -58,7 +58,6 @@ export class UserService implements UserServiceAPI {
   private async getOrCreateOneTimeCode(
     email: string,
   ): Promise<{ expires: Date }> {
-    console.log(this.oneTimeCodeService);
     const oneTimeCode = await this.oneTimeCodeService.findByIdentifier({
       identifier: email,
     });
@@ -72,7 +71,7 @@ export class UserService implements UserServiceAPI {
           identifier: email,
           type: VerificationType.EMAIL_VERIFICATION,
         },
-        expiresIn: this.oneTimeCodeService.getOneTimeCodeExpirationTime(), // 24 hours
+        expirationDate: this.oneTimeCodeService.getOneTimeCodeExpirationTime(), // 24 hours
       });
 
       return { expires: newOneTimeCode.expiresAt };

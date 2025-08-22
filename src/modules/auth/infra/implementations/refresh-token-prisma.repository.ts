@@ -13,6 +13,8 @@ export class RefreshTokenPrismaRepository implements RefreshTokenRepository {
     hashedToken,
     jti,
     userId,
+    userAgent,
+    ipAddress,
   }: CreateRefreshTokenDto): Promise<RefreshTokenEntity> {
     return this.prisma.refreshToken.create({
       data: {
@@ -21,13 +23,15 @@ export class RefreshTokenPrismaRepository implements RefreshTokenRepository {
         user: { connect: { id: userId } },
         expiresAt,
         isActive: true,
+        userAgent,
+        ipAddress,
       },
     });
   }
 
   findByJti(jti: string): Promise<RefreshTokenEntity | null> {
     return this.prisma.refreshToken.findUnique({
-      where: { hashedToken: jti },
+      where: { id: jti },
     });
   }
 
@@ -37,9 +41,9 @@ export class RefreshTokenPrismaRepository implements RefreshTokenRepository {
     });
   }
 
-  async logout(userId: string): Promise<void> {
+  async deleteMany(userId: string, userAgent?: string): Promise<void> {
     await this.prisma.refreshToken.deleteMany({
-      where: { userId },
+      where: { userId, ...(userAgent ? { userAgent } : {}) },
     });
   }
 }
