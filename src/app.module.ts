@@ -7,7 +7,6 @@ import { PrismaModule } from './shared/prisma/prisma.module';
 import { UserModule } from './modules/user/user.module';
 import { ViaCepModule } from './providers/via-cep/via-cep.module';
 import { CloudinaryModule } from './providers/cloudinary/cloudinary.module';
-import { GoogleSheetsModule } from './providers/google-sheets/google-sheets.module';
 import { OneTimeCodeModule } from './modules/one-time-code/one-time-code.module';
 import { IntegrationModule } from './modules/integration/integration.module';
 import { ApiHealthCheckModule } from './modules/api-health-check/api-health-check.module';
@@ -25,7 +24,6 @@ import { LoggerInterceptor } from './shared/interceptors/logger-interceptor';
     UserModule,
     CloudinaryModule,
     ViaCepModule,
-    GoogleSheetsModule,
     OneTimeCodeModule,
     IntegrationModule,
     ApiHealthCheckModule,

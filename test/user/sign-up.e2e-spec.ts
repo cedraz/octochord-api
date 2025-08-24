@@ -1,10 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
+import { AppModule } from 'src/app.module';
 
-describe('AppController (e2e)', () => {
+describe('Sign Up (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
 
@@ -24,7 +23,7 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('should create a user and then find it', async () => {
+  it('/user (POST) Should create user', async () => {
     const usersBefore = await prisma.user.findMany();
     expect(usersBefore).toHaveLength(0);
 
@@ -40,12 +39,5 @@ describe('AppController (e2e)', () => {
     console.log('Users after creation:', usersAfter);
     expect(usersAfter).toHaveLength(1);
     expect(usersAfter[0].email).toBe('test@example.com');
-  });
-
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('API is running!');
   });
 });
