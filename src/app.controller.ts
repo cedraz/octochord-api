@@ -1,4 +1,4 @@
-import { Controller, Get, Head } from '@nestjs/common';
+import { Controller, Get, Head, Header } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PrometheusService } from './providers/prom-client/prometheus.service';
 
@@ -23,7 +23,8 @@ export class AppController {
   }
 
   @Get('metrics')
-  async getMetrics(): Promise<string> {
-    return await Promise.resolve(this.prometheusService.metrics());
+  @Header('Content-Type', 'text/plain; version=0.0.4')
+  getMetrics(): string {
+    return this.prometheusService.metrics();
   }
 }
