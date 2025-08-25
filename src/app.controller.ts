@@ -23,7 +23,7 @@ export class AppController {
   }
 
   @Get('metrics')
-  getMetrics(): string {
-    return this.prometheusService.metrics();
+  async getMetrics(): Promise<string> {
+    return await Promise.resolve(this.prometheusService.metrics());
   }
 }
