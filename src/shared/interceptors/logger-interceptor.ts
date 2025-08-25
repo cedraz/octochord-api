@@ -10,10 +10,14 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Request, Response } from 'express';
 import { CustomLogger } from '../application/logger.service';
+import { PrometheusService } from 'src/providers/prom-client/prometheus.service';
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
-  constructor(private readonly logger: CustomLogger) {}
+  constructor(
+    private readonly logger: CustomLogger,
+    private readonly prometheusService: PrometheusService,
+  ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const now = Date.now();
@@ -25,6 +29,16 @@ export class LoggerInterceptor implements NestInterceptor {
         const res = context.switchToHttp().getResponse<Response>();
         const { statusCode } = res;
         const duration = Date.now() - now;
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const routeTemplate = req.route?.path;
+
+        this.prometheusService.observeHttp({
+          method,
+          endpoint: routeTemplate,
+          statusCode: statusCode,
+          duration,
+        });
 
         this.logSuccess(method, originalUrl, statusCode, duration, requestBody);
       }),

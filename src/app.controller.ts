@@ -1,9 +1,12 @@
 import { Controller, Get, Head } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { PrometheusService } from './providers/prom-client/prometheus.service';
 
 @Controller()
 @ApiTags('App')
 export class AppController {
+  constructor(private readonly prometheusService: PrometheusService) {}
+
   @Get()
   getHello(): string {
     return 'API is running!';
@@ -17,5 +20,10 @@ export class AppController {
   @Head()
   getHead(): string {
     return 'Hello World!';
+  }
+
+  @Get('metrics')
+  getMetrics(): string {
+    return this.prometheusService.metrics();
   }
 }

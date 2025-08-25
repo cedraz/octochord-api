@@ -14,6 +14,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CustomLogger } from './shared/application/logger.service';
 import { env } from './shared/config/env.schema';
 import { LoggerInterceptor } from './shared/interceptors/logger-interceptor';
+import { PrometheusModule } from './providers/prom-client/prometheus.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { LoggerInterceptor } from './shared/interceptors/logger-interceptor';
     OneTimeCodeModule,
     IntegrationModule,
     ApiHealthCheckModule,
+    PrometheusModule,
   ],
   controllers: [AppController],
   providers: [
