@@ -67,6 +67,16 @@ export class LoggerInterceptor implements NestInterceptor {
           };
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const routeTemplate = req.route?.path;
+
+        this.prometheusService.observeHttp({
+          method,
+          endpoint: routeTemplate,
+          statusCode: statusCode,
+          duration,
+        });
+
         this.logError(
           method,
           originalUrl,
