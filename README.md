@@ -176,11 +176,6 @@ docker compose down
 - Webhooks para notificações
 - Integração com eventos GitHub
 
-### Stripe
-
-- Processamento de pagamentos
-- Gerenciamento de assinaturas
-
 ### Cloudinary
 
 - Upload e gerenciamento de imagens
