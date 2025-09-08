@@ -41,10 +41,6 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  DIRECT_DATABASE_URL: string;
-
-  @IsString()
-  @IsNotEmpty()
   ACCESS_TOKEN_SECRET: string;
 
   @IsString()

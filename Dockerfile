@@ -29,4 +29,8 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 
+COPY prisma.sh .
+RUN chmod +x prisma.sh
+ENTRYPOINT ["./prisma.sh"]
+
 CMD ["node", "dist/src/main"]
