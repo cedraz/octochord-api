@@ -1,13 +1,28 @@
 services:
-  api:
-    image: icarocedraz/octochord-api:latest
-    container_name: octochord-api
+  api-octochord:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-octochord
     ports:
       - 3000:3000
     env_file:
       - .env.prod
+  
+  postgres-octochord:
+    image: postgres:15-alpine
+    container_name: postgres-octochord
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    env_file:
+      - .env.prod
     volumes:
-      - octochord-api-data:/var/bin/postgresql/data
+      - pgdata-octochord:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
 
   redis:
     image: redis:7-alpine
@@ -26,6 +41,7 @@ services:
           memory: 64M
 
 volumes:
-  octochord-api-data:
+  api-octochord-data:
   octochord-redis-data:
+  pgdata-octochord:
 
