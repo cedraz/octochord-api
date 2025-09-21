@@ -29,6 +29,16 @@ steps:
       - docker compose -p octochord --env-file .env.prod down --remove-orphans || true
       - docker compose -p octochord --env-file .env.prod up -d --force-recreate --remove-orphans
 
+  - name: notificar-falha-discord
+    image: appleboy/drone-discord
+    settings:
+      webhook_url:
+        from_secret: discord_webhook
+      message: '🚨 Falha no pipeline do repositório **${DRONE_REPO}** na branch **${DRONE_BRANCH}**.'
+    when:
+      status:
+        - failure
+
 volumes:
   - name: dockersock
     host:
