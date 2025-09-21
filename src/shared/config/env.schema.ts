@@ -62,6 +62,21 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   REDIS_URL: string;
+
+  @IsString()
+  MINIO_BUCKET_NAME: string;
+
+  @IsString()
+  MINIO_SECRET_ACCESS_KEY: string;
+
+  @IsString()
+  MINIO_ACCESS_KEY_ID: string;
+
+  @IsString()
+  MINIO_REGION: string;
+
+  @IsString()
+  MINIO_ENDPOINT: string;
 }
 
 const validatedConfig = plainToInstance(EnvironmentVariables, process.env, {

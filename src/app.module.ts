@@ -15,6 +15,7 @@ import { CustomLogger } from './shared/application/logger.service';
 import { env } from './shared/config/env.schema';
 import { LoggerInterceptor } from './shared/interceptors/logger-interceptor';
 import { PrometheusModule } from './providers/prom-client/prometheus.module';
+import { MinioModule } from './providers/minio/minio.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { PrometheusModule } from './providers/prom-client/prometheus.module';
     IntegrationModule,
     ApiHealthCheckModule,
     PrometheusModule,
+    MinioModule,
   ],
   controllers: [AppController],
   providers: [

@@ -40,6 +40,9 @@ export const ErrorMessagesHelper = {
   NO_TOKEN_PROVIDED: 'Nenhum token fornecido.',
   INVALID_TOKEN: 'Token inválido.',
   INVALID_IMAGE_FORMAT: 'Formato de imagem inválido.',
+  MINIO_UNAVAILABLE: 'Serviço MinIO indisponível.',
+  MINIO_BUCKET_NOT_FOUND: 'Bucket MinIO não encontrado.',
+  MINIO_UPLOAD_ERROR: 'Erro ao fazer upload para o MinIO.',
   ...notFoundErrorMessagesHelper,
   ...dynamicErrorMessagesHelper,
 };

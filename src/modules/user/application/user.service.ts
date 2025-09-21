@@ -11,6 +11,7 @@ import { VerificationType } from 'src/shared/domain/enums/verification-type.enum
 import { UserServiceAPI } from './user.service.interface';
 import { OneTimeCodeServiceAPI } from 'src/modules/one-time-code/application/one-time-code.service.interface';
 import { OTC_SERVICE_TOKEN } from 'src/shared/tokens/tokens';
+import { MinioService } from 'src/providers/minio/minio.service';
 
 @Injectable()
 export class UserService implements UserServiceAPI {
@@ -19,6 +20,7 @@ export class UserService implements UserServiceAPI {
     private readonly cloudinaryService: CloudinaryService,
     @Inject(OTC_SERVICE_TOKEN)
     private readonly oneTimeCodeService: OneTimeCodeServiceAPI,
+    private readonly minioService: MinioService,
   ) {}
 
   async create(
@@ -92,10 +94,10 @@ export class UserService implements UserServiceAPI {
     return this.userRepository.update(id, updateUserDto);
   }
 
-  async uploadAvatar(id: string, buffer: Buffer) {
-    const response = await this.cloudinaryService.uploadImage(buffer);
+  async uploadAvatar(id: string, file: Express.Multer.File) {
+    const response = await this.minioService.uploadFile(file);
 
-    const imageURL = response.secure_url as string;
+    const imageURL = response.url;
 
     return this.userRepository.update(id, {
       image: imageURL,

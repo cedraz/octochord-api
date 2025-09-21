@@ -7,6 +7,7 @@ import { UserPrismaRepository } from './infra/implementations/user-prisma.reposi
 import { USER_SERVICE_TOKEN } from 'src/shared/tokens/tokens';
 import { MailerModule } from 'src/providers/mailer/mailer.module';
 import { OneTimeCodeModule } from '../one-time-code/one-time-code.module';
+import { MinioModule } from 'src/providers/minio/minio.module';
 
 @Module({
   controllers: [UserController],
@@ -21,6 +22,6 @@ import { OneTimeCodeModule } from '../one-time-code/one-time-code.module';
     },
   ],
   exports: [USER_SERVICE_TOKEN],
-  imports: [CloudinaryModule, MailerModule, OneTimeCodeModule],
+  imports: [CloudinaryModule, MailerModule, OneTimeCodeModule, MinioModule],
 })
 export class UserModule {}

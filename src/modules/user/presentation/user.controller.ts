@@ -85,6 +85,6 @@ export class UserController {
     @UploadedFile(new imageValidationPipe()) image: Express.Multer.File,
     @CurrentUser() user: TAuthenticatedUser,
   ) {
-    return this.userService.uploadAvatar(user.sub, image.buffer);
+    return this.userService.uploadAvatar(user.sub, image);
   }
 }

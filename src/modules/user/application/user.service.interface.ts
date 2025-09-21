@@ -13,5 +13,8 @@ export abstract class UserServiceAPI {
     updateUserDto: UpdateUserDto,
   ): Promise<UserEntity>;
 
-  abstract uploadAvatar(id: string, buffer: Buffer): Promise<UserEntity>;
+  abstract uploadAvatar(
+    id: string,
+    file: Express.Multer.File,
+  ): Promise<UserEntity>;
 }
