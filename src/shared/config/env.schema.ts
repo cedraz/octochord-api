@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
+  IsUrl,
   validateSync,
 } from 'class-validator';
 import * as dotenv from 'dotenv';
@@ -17,19 +18,15 @@ export class EnvironmentVariables {
   CLOUDINARY_URL: string;
 
   @IsString()
-  GOOGLE_CLIENT_EMAIL: string;
+  GOOGLE_CLIENT_ID: string;
 
   @IsString()
-  @IsNotEmpty()
-  GOOGLE_PRIVATE_KEY: string;
+  GOOGLE_CLIENT_SECRET: string;
 
-  @IsString()
-  @IsNotEmpty()
-  GOOGLE_PROJECT_ID: string;
-
-  @IsString()
-  @IsNotEmpty()
-  GOOGLE_SPREADSHEET_ID: string;
+  @IsUrl({
+    require_tld: false,
+  })
+  GOOGLE_CALLBACK_URL: string;
 
   @IsString()
   @IsNotEmpty()

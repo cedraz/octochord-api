@@ -7,6 +7,7 @@ import {
   Patch,
   UnauthorizedException,
   Req,
+  Get,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../application/auth.service';
@@ -23,16 +24,38 @@ import { VerificationType } from 'src/shared/domain/enums/verification-type.enum
 import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
 import { VerifyEmailDto } from '../application/dto/verify-email.dto';
 import { Request } from 'express';
+import { GoogleOauthGuard } from '../application/guards/google-oauth.guard';
+import { CurrentGoogleUser } from 'src/shared/decorators/google-user.decorator';
+import { GoogleUser } from '../domain/types';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('login')
+  @Post('/login')
   @ApiOperation({ summary: 'User login' })
   login(@Body() loginDto: LoginDto, @Req() req: Request) {
     return this.authService.login(loginDto, req);
+  }
+
+  @Get('/google')
+  @UseGuards(GoogleOauthGuard)
+  @ApiOperation({
+    summary:
+      'Google OAuth login, using this route you gonna be redirected to Google',
+  })
+  googleAuth() {
+    return;
+  }
+
+  @Get('/google/callback')
+  @UseGuards(GoogleOauthGuard)
+  @ApiOperation({ summary: 'Google OAuth callback' })
+  googleAuthCallback(@CurrentGoogleUser() user: GoogleUser) {
+    console.log('Google OAuth callback hit');
+    console.log(user);
+    return this.authService.googleLogin(user);
   }
 
   @Post('/refresh')
@@ -49,7 +72,7 @@ export class AuthController {
     return this.authService.logout(user.sub);
   }
 
-  @Post('verify-email')
+  @Post('/verify-email')
   @ApiOperation({ summary: 'Verify an email address using a one-time code' })
   verifyEmail(@Body() dto: VerifyEmailDto) {
     return this.authService.verifyEmail(dto);
@@ -69,7 +92,7 @@ export class AuthController {
     );
   }
 
-  @Post('change-email-validation')
+  @Post('/change-email-validation')
   @ApiOperation({ summary: 'Validate a verification request for change email' })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

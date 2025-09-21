@@ -8,6 +8,7 @@ import { RefreshTokenPrismaRepository } from './infra/implementations/refresh-to
 import { AccessTokenStrategy } from './application/strategies/access-token.strategy';
 import { RefreshTokenStrategy } from './application/strategies/refresh-token.strategy';
 import { OneTimeCodeModule } from '../one-time-code/one-time-code.module';
+import { GoogleStrategy } from './application/strategies/google-oauth.strategy';
 
 @Module({
   controllers: [AuthController],
@@ -15,12 +16,12 @@ import { OneTimeCodeModule } from '../one-time-code/one-time-code.module';
     AuthService,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+    GoogleStrategy,
     {
       provide: RefreshTokenRepository,
       useClass: RefreshTokenPrismaRepository,
     },
   ],
-  exports: [AccessTokenStrategy],
   imports: [
     JwtModule.register({ global: true }),
     UserModule,

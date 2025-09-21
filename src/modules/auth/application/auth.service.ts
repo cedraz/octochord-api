@@ -27,6 +27,7 @@ import { ValidateOneTimeCodeDto } from 'src/shared/application/dto/validate-one-
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { Request } from 'express';
+import { GoogleUser } from '../domain/types';
 
 @Injectable()
 export class AuthService {
@@ -38,6 +39,14 @@ export class AuthService {
     @Inject(OTC_SERVICE_TOKEN)
     private readonly oneTimeCodeService: OneTimeCodeServiceAPI,
   ) {}
+
+  googleLogin(user: GoogleUser) {
+    // todo implementar autenticação com o usuário do google
+    return {
+      message: 'Google login successful',
+      user,
+    };
+  }
 
   async login(loginDto: LoginDto, request: Request): Promise<TokenResponseDto> {
     const user = await this.userService.findByEmail(loginDto.email);
