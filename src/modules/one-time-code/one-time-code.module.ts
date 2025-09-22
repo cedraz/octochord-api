@@ -4,7 +4,7 @@ import { OneTimeCodeController } from './presentation/one-time-code.controller';
 import { OneTimeCodeRepository } from './domain/one-time-code.repository';
 import { OneTimeCodePrismaRepository } from './infra/implementations/one-time-code-prisma.repository';
 import { OTC_SERVICE_TOKEN } from 'src/shared/tokens/tokens';
-import { MailerModule } from 'src/providers/mailer/mailer.module';
+import { MailerModule } from 'src/providers/nodemailer/mailer.module';
 
 @Module({
   providers: [

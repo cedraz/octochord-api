@@ -2,7 +2,7 @@ import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
-import { CloudinaryService } from 'src/providers/cloudinary/cloudinary.service';
+import { CloudinaryService } from 'src/providers/cloudinary/cloudinary-storage.adapter';
 import { MessageResponseDto } from 'src/shared/application/dto/message-response.dto';
 import { UserRepository } from '../domain/user.repository';
 import { UserEntity } from '../domain/entities/user.entity';

@@ -1,12 +1,12 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
-import { api } from 'src/providers/axios';
+import { api } from 'src/providers/axios/axios-http.adapter';
 import axios, { AxiosResponse } from 'axios';
 import { NotFoundException } from '@nestjs/common';
 import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
 import { MailerProvider } from 'src/providers/mailer/mailer.provider';
-import { SendEmailQueueService } from 'src/providers/mailer/queue/send-email-queue.service';
+import { SendEmailQueueService } from 'src/providers/nodemailer/queue/send-email-queue.service';
 import { ApiHealthCheckDto } from '../dto/api-health-check.dto';
 import { QueueNames } from 'src/shared/helpers/queue-names.helper';
 import { HttpMethods } from 'src/shared/domain/enums/http-methods.enum';

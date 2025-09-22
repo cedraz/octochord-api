@@ -3,7 +3,7 @@ import { IntegrationController } from './presentation/integration.controller';
 import { IntegrationService } from './application/integration.service';
 import { IntegrationRepository } from './domain/integration.repository';
 import { IntegrationPrismaRepository } from './infra/implementations/integration-prisma.repository';
-import { MailerModule } from 'src/providers/mailer/mailer.module';
+import { MailerModule } from 'src/providers/nodemailer/mailer.module';
 import { DiscordModule } from 'src/providers/discord/discord.module';
 
 @Module({

@@ -4,10 +4,13 @@ import { UserController } from './presentation/user.controller';
 import { CloudinaryModule } from 'src/providers/cloudinary/cloudinary.module';
 import { UserRepository } from './domain/user.repository';
 import { UserPrismaRepository } from './infra/implementations/user-prisma.repository';
-import { USER_SERVICE_TOKEN } from 'src/shared/tokens/tokens';
-import { MailerModule } from 'src/providers/mailer/mailer.module';
+import {
+  STORAGE_PROVIDER_TOKEN,
+  USER_SERVICE_TOKEN,
+} from 'src/shared/tokens/tokens';
+import { MailerModule } from 'src/providers/nodemailer/mailer.module';
 import { OneTimeCodeModule } from '../one-time-code/one-time-code.module';
-import { MinioModule } from 'src/providers/minio/minio.module';
+import { MinioService } from 'src/providers/minio/minio.service';
 
 @Module({
   controllers: [UserController],
@@ -20,8 +23,12 @@ import { MinioModule } from 'src/providers/minio/minio.module';
       provide: USER_SERVICE_TOKEN,
       useClass: UserService,
     },
+    {
+      provide: STORAGE_PROVIDER_TOKEN,
+      useClass: MinioService,
+    },
   ],
   exports: [USER_SERVICE_TOKEN],
-  imports: [CloudinaryModule, MailerModule, OneTimeCodeModule, MinioModule],
+  imports: [CloudinaryModule, MailerModule, OneTimeCodeModule],
 })
 export class UserModule {}

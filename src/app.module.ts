@@ -5,8 +5,6 @@ import { BullModule } from '@nestjs/bullmq';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaModule } from './shared/prisma/prisma.module';
 import { UserModule } from './modules/user/user.module';
-import { ViaCepModule } from './providers/via-cep/via-cep.module';
-import { CloudinaryModule } from './providers/cloudinary/cloudinary.module';
 import { OneTimeCodeModule } from './modules/one-time-code/one-time-code.module';
 import { IntegrationModule } from './modules/integration/integration.module';
 import { ApiHealthCheckModule } from './modules/api-health-check/api-health-check.module';
@@ -14,8 +12,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CustomLogger } from './shared/application/logger.service';
 import { env } from './shared/config/env.schema';
 import { LoggerInterceptor } from './shared/interceptors/logger-interceptor';
-import { PrometheusModule } from './providers/prom-client/prometheus.module';
-import { MinioModule } from './providers/minio/minio.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -24,13 +21,10 @@ import { MinioModule } from './providers/minio/minio.module';
     AuthModule,
     PrismaModule,
     UserModule,
-    CloudinaryModule,
-    ViaCepModule,
     OneTimeCodeModule,
     IntegrationModule,
     ApiHealthCheckModule,
-    PrometheusModule,
-    MinioModule,
+    JobsModule,
   ],
   controllers: [AppController],
   providers: [

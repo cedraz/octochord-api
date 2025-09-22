@@ -4,7 +4,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { ApiHealthCheckConsumerService } from './application/consumers/api-health-check-consumer.service';
 import { ApiHealthCheckQueueService } from './application/queue/api-health-check-queue.service';
 import { QueueNames } from 'src/shared/helpers/queue-names.helper';
-import { MailerModule } from 'src/providers/mailer/mailer.module';
+import { MailerModule } from 'src/providers/nodemailer/mailer.module';
 import { ApiHealthCheckController } from './presentation/api-health-check.controller';
 import { ApiHealthCheckRepository } from './domain/api-health-check.repository';
 import { ApiHealthCheckPrismaRepository } from './infra/implementations/api-health-check-prisma.repository';
