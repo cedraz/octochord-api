@@ -306,6 +306,8 @@ export class AuthService {
 
     await this.userService.update(user.id, { passwordHash });
 
+    await this.logout(user.id);
+
     return { message: 'Senha alterada com sucesso.' };
   }
 }
