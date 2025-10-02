@@ -25,9 +25,9 @@ steps:
     commands:
       - apk add --no-cache docker-cli-compose
       - cd /app
-      - docker compose -p octochord --env-file .env.prod pull
-      - docker compose -p octochord --env-file .env.prod down --remove-orphans || true
-      - docker compose -p octochord --env-file .env.prod up -d --force-recreate --remove-orphans
+      - docker compose -p octochord --env-file .env pull
+      - docker compose -p octochord --env-file .env down --remove-orphans || true
+      - docker compose -p octochord --env-file .env up -d --force-recreate --remove-orphans
 
   - name: notificar-falha-discord
     image: appleboy/drone-discord

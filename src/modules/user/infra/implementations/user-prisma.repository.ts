@@ -60,6 +60,7 @@ export class UserPrismaRepository implements UserRepository {
         image: updateUserDto.image,
         updatedAt: new Date(),
         emailVerifiedAt: updateUserDto.emailVerifiedAt,
+        passwordHash: updateUserDto.passwordHash,
       },
     });
   }
