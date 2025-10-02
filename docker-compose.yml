@@ -5,9 +5,9 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_USER=octochord
-      - POSTGRES_PASSWORD=octochord
-      - POSTGRES_DB=octochorddb
+      - POSTGRES_USER=postgres-octochord
+      - POSTGRES_PASSWORD=postgres-octochord
+      - POSTGRES_DB=postgres-octochorddb
     volumes:
       - octochord-postgres-data:/var/lib/postgresql/data
 

@@ -42,6 +42,7 @@ export class AuthService {
 
   googleLogin(user: GoogleUser) {
     // todo implementar autenticação com o usuário do google
+    console.log(user);
     return {
       message: 'Google login successful',
       user,

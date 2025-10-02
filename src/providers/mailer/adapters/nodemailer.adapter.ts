@@ -4,12 +4,13 @@ import { env } from 'src/shared/config/env.schema';
 import { MailerProvider } from 'src/providers/mailer/mailer.provider';
 import { createEmailTemplate } from '../utils/create-email-template';
 import { SendEmailDto } from '../dto/send-email.dto';
+import { CustomLogger } from 'src/shared/application/logger.service';
 
 @Injectable()
 export class NodemailerAdapter implements MailerProvider {
   private transporter: nodemailer.Transporter;
 
-  constructor() {
+  constructor(private readonly logger: CustomLogger) {
     this.transporter = nodemailer.createTransport({
       host: env.MAIL_HOST,
       port: env.MAIL_PORT,
@@ -25,11 +26,15 @@ export class NodemailerAdapter implements MailerProvider {
   async sendEmail({ to, subject, message }: SendEmailDto): Promise<void> {
     const emailTemplate = createEmailTemplate({ message });
 
-    await this.transporter.sendMail({
-      to: `<${to}>`,
-      from: `noreply <${env.MAIL_USER}>`,
-      subject,
-      html: emailTemplate.html,
-    });
+    try {
+      await this.transporter.sendMail({
+        to: `<${to}>`,
+        from: `noreply <${env.MAIL_USER}>`,
+        subject,
+        html: emailTemplate.html,
+      });
+    } catch (error) {
+      this.logger.error('Error sending email', error);
+    }
   }
 }
