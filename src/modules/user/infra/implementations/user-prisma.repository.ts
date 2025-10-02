@@ -51,7 +51,7 @@ export class UserPrismaRepository implements UserRepository {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
-    return this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id },
       data: {
         email: updateUserDto.email,
@@ -63,5 +63,7 @@ export class UserPrismaRepository implements UserRepository {
         passwordHash: updateUserDto.passwordHash,
       },
     });
+
+    return new UserEntity(user);
   }
 }

@@ -1,9 +1,12 @@
 import * as bcrypt from 'bcryptjs';
+import { Exclude } from 'class-transformer';
 
 export class UserEntity {
   id: string;
   email: string;
   name: string;
+
+  @Exclude()
   passwordHash: string;
   createdAt: Date;
   updatedAt: Date;
