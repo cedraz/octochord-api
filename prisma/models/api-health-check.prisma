@@ -1,10 +1,11 @@
 model ApiHealthCheck {
-  id            String      @id @default(cuid())
-  url           String
-  status        APIStatus
-  lastCheckedAt DateTime    @default(now()) @map("last_checked_at")
-  interval      Int         @default(900) // Interval in seconds
-  method        HttpMethods @default(GET)
+  id                  String      @id @default(cuid())
+  url                 String
+  status              APIStatus
+  lastCheckedAt       DateTime    @default(now()) @map("last_checked_at")
+  interval            Int         @default(900) // Interval in seconds
+  method              HttpMethods @default(GET)
+  consecutiveFailures Int         @default(0) @map("consecutive_failures")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

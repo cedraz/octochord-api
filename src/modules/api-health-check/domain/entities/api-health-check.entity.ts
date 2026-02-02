@@ -12,6 +12,7 @@ export class ApiHealthCheckEntity {
   createdAt: Date;
   updatedAt: Date;
   userId: string;
+  consecutiveFailures: number;
 
   @ApiProperty({
     enumName: 'HttpMethod',
