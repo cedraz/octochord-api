@@ -11,6 +11,7 @@ import { ApiHealthCheckPrismaRepository } from './infra/implementations/api-heal
 import { UserModule } from '../user/user.module';
 import { UnitOfWork } from 'src/shared/domain/unit-of-work';
 import { PrismaUnitOfWork } from 'src/shared/prisma/prisma.unit-of-work';
+import { CustomLogger } from 'src/shared/application/logger.service';
 
 @Module({
   controllers: [ApiHealthCheckController],
@@ -26,6 +27,7 @@ import { PrismaUnitOfWork } from 'src/shared/prisma/prisma.unit-of-work';
     ApiHealthCheckService,
     ApiHealthCheckConsumerService,
     ApiHealthCheckQueueService,
+    CustomLogger,
   ],
   imports: [
     BullModule.registerQueue({ name: QueueNames.API_HEALTH_CHECK_QUEUE }),
