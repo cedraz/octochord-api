@@ -102,34 +102,37 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
 
     const { email } = apiHealthCheck.user;
 
+    const REQUEST_TIMEOUT_MS = 10000;
+    const axiosConfig = { timeout: REQUEST_TIMEOUT_MS };
+
     switch (data.method) {
       case HttpMethods.GET: {
-        const response = api.get(data.url);
+        const response = api.get(data.url, axiosConfig);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;
       }
       case HttpMethods.POST: {
-        const response = api.post(data.url);
+        const response = api.post(data.url, {}, axiosConfig);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;
       }
       case HttpMethods.PUT: {
-        const response = api.put(data.url);
+        const response = api.put(data.url, {}, axiosConfig);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;
       }
       case HttpMethods.DELETE: {
-        const response = api.delete(data.url);
+        const response = api.delete(data.url, axiosConfig);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;
       }
       case HttpMethods.PATCH: {
-        const response = api.patch(data.url);
+        const response = api.patch(data.url, {}, axiosConfig);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;
       }
       case HttpMethods.HEAD: {
-        const response = api.head(data.url);
+        const response = api.head(data.url, axiosConfig);
         await this.apiHealthCheckHandler(data.id, email, response);
         break;
       }
