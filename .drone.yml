@@ -16,18 +16,16 @@ steps:
       cache_to: icarocedraz/octochord-api:latest,mode=max
 
   - name: deploy-to-server
-    image: docker:23
-    volumes:
-      - name: dockersock
-        path: /var/run/docker.sock
-      - name: project-files
-        path: /app
-    commands:
-      - apk add --no-cache docker-cli-compose
-      - cd /app
-      - docker compose -p octochord --env-file .env pull
-      - docker compose -p octochord --env-file .env down --remove-orphans || true
-      - docker compose -p octochord --env-file .env up -d --force-recreate --remove-orphans
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        from_secret: ssh_host
+      username:
+        from_secret: ssh_username
+      key:
+        from_secret: ssh_key
+      script:
+        - kubectl rollout restart deployment/octochord-api
 
   - name: notificar-falha-discord
     image: appleboy/drone-discord
@@ -38,14 +36,6 @@ steps:
     when:
       status:
         - failure
-
-volumes:
-  - name: dockersock
-    host:
-      path: /var/run/docker.sock
-  - name: project-files
-    host:
-      path: /home/cedraz-ubuntu-2/Documentos/deploys/octochord
 
 trigger:
   branch:
