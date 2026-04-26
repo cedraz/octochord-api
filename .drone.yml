@@ -24,6 +24,7 @@ steps:
       key:
         from_secret: ssh_key
       script:
+        - export KUBECONFIG=/home/cedraz-ubuntu-2/.kube/config
         - kubectl rollout restart deployment/octochord-api
 
   - name: notificar-falha-discord
