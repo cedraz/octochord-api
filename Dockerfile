@@ -2,12 +2,18 @@ FROM node:22-alpine AS builder
 
 RUN npm install -g pnpm
 
+# Habilita cache de dependências do pnpm entre builds
+RUN pnpm config set store-dir /root/.local/share/pnpm/store
+
 WORKDIR /app
 
+# Copia só o necessário para instalar dependências
+# Essa layer só rebuilda se package.json ou lockfile mudarem
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma
 
-RUN pnpm install
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
 
 RUN pnpm prisma generate
 
@@ -17,9 +23,11 @@ RUN pnpm run build
 
 RUN pnpm prune --prod
 
-FROM alpine:latest
+# Imagem final — usa node:22-alpine em vez de alpine puro
+# Evita problemas de compatibilidade com binários do Prisma
+FROM node:22-alpine AS runner
 
-RUN apk add --no-cache nodejs openssl
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
