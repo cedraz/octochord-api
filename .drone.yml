@@ -13,7 +13,6 @@ steps:
       repo: icarocedraz/octochord-api
       tags: latest
       cache_from: icarocedraz/octochord-api:latest
-      cache_to: icarocedraz/octochord-api:latest,mode=max
 
   - name: deploy-to-server
     image: appleboy/drone-ssh
