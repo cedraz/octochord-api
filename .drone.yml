@@ -5,6 +5,8 @@ name: deploy-octochord-api
 steps:
   - name: build-and-push
     image: plugins/docker
+    environment:
+      DOCKER_BUILDKIT: '1'
     settings:
       username:
         from_secret: docker_username
@@ -13,8 +15,6 @@ steps:
       repo: icarocedraz/octochord-api
       tags: latest
       cache_from: icarocedraz/octochord-api:latest
-      build_args:
-        - DOCKER_BUILDKIT=1
 
   - name: deploy-to-server
     image: appleboy/drone-ssh
