@@ -13,6 +13,8 @@ steps:
       repo: icarocedraz/octochord-api
       tags: latest
       cache_from: icarocedraz/octochord-api:latest
+      build_args:
+        - DOCKER_BUILDKIT=1
 
   - name: deploy-to-server
     image: appleboy/drone-ssh
