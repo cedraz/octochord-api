@@ -1,9 +1,9 @@
 services:
   db:
-    image: postgres:alpine
+    image: postgres:17-alpine
     container_name: postgres-octochord
     ports:
-      - 5432:5432
+      - 5433:5432
     environment:
       - POSTGRES_USER=postgres-octochord
       - POSTGRES_PASSWORD=postgres-octochord
@@ -15,7 +15,7 @@ services:
     image: redis:7-alpine
     container_name: redis-octochord
     ports:
-      - 6379:6379
+      - 6380:6379
     volumes:
       -   octochord-redis-data:/data
     command: ["redis-server", "--appendonly", "yes"]

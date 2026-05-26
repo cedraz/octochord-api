@@ -28,9 +28,12 @@ import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { Request } from 'express';
 import { GoogleUser } from '../domain/types';
+import { CustomLogger } from 'src/shared/application/logger.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new CustomLogger(AuthService.name);
+
   constructor(
     @Inject(USER_SERVICE_TOKEN)
     private readonly userService: UserServiceAPI,
@@ -265,7 +268,15 @@ export class AuthService {
   ): Promise<MessageResponseDto> {
     const { email, password } = recoverPasswordDto;
 
+    this.logger.log(
+      `Iniciando processo de recuperação de senha para o email: ${email}`,
+    );
+
     const user = await this.userService.findByEmail(email);
+
+    this.logger.log(
+      `Usuário encontrado para o email ${email}: ${user ? 'Sim' : 'Não'}`,
+    );
 
     if (!user) {
       throw new NotFoundException(ErrorMessagesHelper.USER_NOT_FOUND);

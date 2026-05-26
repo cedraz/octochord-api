@@ -86,7 +86,7 @@ export class UserService implements UserServiceAPI {
     return this.userRepository.findById(id);
   }
 
-  findByEmail(email: string) {
+  findByEmail(email: string): Promise<UserEntity | null> {
     return this.userRepository.findByEmail(email);
   }
 

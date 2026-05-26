@@ -4,9 +4,12 @@ import { UserEntity } from '../../domain/entities/user.entity';
 import { UserPaginationDto } from '../../application/dto/user.pagination.dto';
 import { UpdateUserDto } from '../../application/dto/update-user.dto';
 import { UserRepository } from '../../domain/user.repository';
+import { CustomLogger } from 'src/shared/application/logger.service';
 
 @Injectable()
 export class UserPrismaRepository implements UserRepository {
+  private readonly logger = new CustomLogger(UserPrismaRepository.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   async create(userEntity: UserEntity) {
@@ -47,6 +50,7 @@ export class UserPrismaRepository implements UserRepository {
   }
 
   async findByEmail(email: string): Promise<UserEntity | null> {
+    this.logger.log(`Buscando usuário por email: ${email}`);
     return this.prisma.user.findUnique({ where: { email } });
   }
 
