@@ -117,7 +117,12 @@ export class AuthController {
       );
     }
 
-    return this.authService.recoverPassword(recoverPasswordDto);
+    // Usa o email do JWT (verificado via OTC), não o do body,
+    // para garantir que o usuário só reseta a própria senha.
+    return this.authService.recoverPassword({
+      ...recoverPasswordDto,
+      email: user.sub,
+    });
   }
 
   @Patch('/change-password')

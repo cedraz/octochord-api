@@ -7,7 +7,7 @@ import { SendEmailQueueService } from 'src/providers/mailer/queue/send-email-que
 import { CreateOneTimeCodeDto } from './dto/create-one-time-code.dto';
 import { FindOneTimeCodeDto } from './dto/find-one-time-code.dto';
 import { ValidateOneTimeCodeDto } from '../../../shared/application/dto/validate-one-time-code.dto';
-import { env } from 'process';
+import { env } from 'src/shared/config/env.schema';
 import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
 import { ValidateResponseDto } from './dto/validate-response.dto';
 
@@ -92,7 +92,7 @@ export class OneTimeCodeService implements OneTimeCodeServiceAPI {
     }
 
     const tokenPayload = {
-      sub: '',
+      sub: oneTimeCode.identifier, // email verificado pelo OTC — identifica quem validou o código
       otcType: validateOneTimeCodeDto.type,
     };
 
