@@ -1,6 +1,6 @@
 FROM node:22-alpine AS builder
 
-RUN npm install -g pnpm
+RUN npm install -g pnpm@10
 
 # Habilita cache de dependências do pnpm entre builds
 RUN pnpm config set store-dir /root/.local/share/pnpm/store

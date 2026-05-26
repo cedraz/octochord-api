@@ -9,7 +9,9 @@
     "onlyBuiltDependencies": [
       "@nestjs/core",
       "@prisma/client",
-      "bcrypt",
+      "@prisma/engines",
+      "@scarf/scarf",
+      "msgpackr-extract",
       "prisma"
     ]
   },
