@@ -3,8 +3,7 @@ model User {
   name            String
   passwordHash    String    @map("password_hash")
   email           String    @unique
-  phone           String?
-  image           String?
+  imageUrl           String? @map("image_url")
   emailVerifiedAt DateTime? @map("email_verified_at")
 
   createdAt DateTime  @default(now()) @map("created_at")
@@ -21,7 +20,7 @@ model User {
 
 model RefreshToken {
   id          String   @id @default(nanoid()) @db.VarChar(21)
-  hashedToken String   @unique
+  hashedToken String   @unique @map("hashed_token")
   expiresAt   DateTime @map("expires_at")
   isActive    Boolean  @default(true) @map("is_active")
   ipAddress   String?  @map("ip_address")
@@ -41,8 +40,8 @@ model OneTimeCode {
   identifier String           @unique
   code       String
   type       VerificationType
-  expiresAt  DateTime
-  metadata   Json?
+  expiresAt  DateTime @map("expires_at")
+  metadata   Json?   @map("metadata")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

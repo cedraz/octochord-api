@@ -7,12 +7,14 @@ import { Type } from 'class-transformer';
 export class ApiHealthCheckEntity {
   id: string;
   url: string;
+  name: string;
   lastCheckedAt: Date;
   interval: number;
   createdAt: Date;
   updatedAt: Date;
   userId: string;
   consecutiveFailures: number;
+  slaTarget: number;
 
   @ApiProperty({
     enumName: 'HttpMethod',

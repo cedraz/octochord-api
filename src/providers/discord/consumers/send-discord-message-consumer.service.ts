@@ -3,13 +3,13 @@ import { Job } from 'bullmq';
 import { QueueNames } from 'src/shared/helpers/queue-names.helper';
 import { SendDiscordMessageDto } from '../dto/send-discord-message.dto';
 import { DiscordProvider } from '../discord.provider';
-import { CustomLogger } from 'src/shared/application/logger.service';
+import { LoggerService } from 'src/shared/application/logger.service';
 
 @Processor(QueueNames.SEND_DISCORD_MESSAGE_QUEUE)
 export class SendDiscordMessageConsumer extends WorkerHost {
   constructor(
     private readonly discordService: DiscordProvider,
-    private readonly logger: CustomLogger,
+    private readonly logger: LoggerService,
   ) {
     logger.setContext(SendDiscordMessageConsumer.name);
     super();

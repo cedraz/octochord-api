@@ -10,7 +10,7 @@ import { SendEmailQueueService } from 'src/providers/mailer/queue/send-email-que
 import { ApiHealthCheckDto } from '../dto/api-health-check.dto';
 import { QueueNames } from 'src/shared/helpers/queue-names.helper';
 import { HttpMethods } from 'src/shared/domain/enums/http-methods.enum';
-import { CustomLogger } from 'src/shared/application/logger.service';
+import { LoggerService } from 'src/shared/application/logger.service';
 import { ApiHealthCheckEntity } from '../../domain/entities/api-health-check.entity';
 import { APIStatus } from 'src/shared/domain/enums/api-status.enum';
 
@@ -20,7 +20,7 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
     private prismaService: PrismaService,
     private mailerService: MailerProvider,
     private sendEmailQueueService: SendEmailQueueService,
-    private readonly logger: CustomLogger,
+    private readonly logger: LoggerService,
   ) {
     super();
   }
@@ -37,6 +37,8 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
 
     let newStatus: 'UP' | 'DOWN' = 'DOWN';
     let responseTime = 0;
+    let statusCode: number | null = null;
+    let errorMessage: string | null = null;
 
     const FAILURE_THRESHOLD = 3;
 
@@ -49,8 +51,8 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
         ? parseInt(response.headers['request-duration'] as string, 10)
         : Date.now() - start;
 
-      newStatus =
-        response.status >= 200 && response.status < 304 ? 'UP' : 'DOWN';
+      statusCode = response.status;
+      newStatus = response.status >= 200 && response.status < 304 ? 'UP' : 'DOWN';
     } catch (error) {
       responseTime = Date.now() - start;
 
@@ -59,10 +61,14 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
           this.logger.log(
             `Request timed out for API Health Check ID: ${apiHealthCheck.id}`,
           );
+          errorMessage = 'Timeout';
           newStatus = 'DOWN';
         } else if (error.response) {
+          statusCode = error.response.status;
+          errorMessage = error.response.statusText || null;
           newStatus = error.response.status < 500 ? 'UP' : 'DOWN';
         } else {
+          errorMessage = error.message ?? 'Connection error';
           newStatus = 'DOWN';
         }
       } else {
@@ -76,23 +82,22 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
       failures = 0;
 
       if (apiHealthCheck.status === APIStatus.DOWN) {
-        await this.mailerService.sendEmail({
-          to: email,
-          subject: 'API voltou a funcionar',
-          message: `A API em ${apiHealthCheck.url} voltou a funcionar.`,
-        });
-      }
-
-      if (emailNotification?.emails?.length) {
-        await Promise.all(
-          emailNotification.emails.map((e) =>
+        const recoveryEmails = [
+          this.mailerService.sendEmail({
+            to: email,
+            subject: 'API voltou a funcionar',
+            message: `A API em ${apiHealthCheck.url} voltou a funcionar.`,
+          }),
+          ...(emailNotification?.emails ?? []).map((e) =>
             this.sendEmailQueueService.execute({
               to: e,
               subject: '✅ API voltou a funcionar',
               message: `A API em ${apiHealthCheck.url} voltou a responder.`,
             }),
           ),
-        );
+        ];
+
+        await Promise.all(recoveryEmails);
       }
     } else {
       failures += 1;
@@ -133,8 +138,10 @@ export class ApiHealthCheckConsumerService extends WorkerHost {
       this.prismaService.apiHealthCheckLog.create({
         data: {
           status: newStatus,
-          checkedAt: new Date(),
+          statusCode,
+          errorMessage,
           responseTime,
+          checkedAt: new Date(),
           apiHealthCheck: { connect: { id: apiHealthCheck.id } },
         },
       }),

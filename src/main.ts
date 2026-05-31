@@ -1,7 +1,7 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
-import { CustomLogger } from './shared/application/logger.service';
+import { LoggerService } from './shared/application/logger.service';
 import { GlobalErrorFilter } from './shared/filters/global-error.filter';
 import { AppModule } from './app.module';
 import { env } from './shared/config/env.schema';
@@ -9,7 +9,7 @@ import { env } from './shared/config/env.schema';
 async function bootstrap() {
   console.time('server-started');
 
-  const logger = new CustomLogger();
+  const logger = new LoggerService();
 
   const app = await NestFactory.create(AppModule, {
     logger,
@@ -24,8 +24,7 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('Nest API Template Prisma API Docs')
-    .setDescription('The Nest API Template Prisma API description')
+    .setTitle('Octocord API Docs')
     .setVersion('1.0')
     .addBearerAuth({
       type: 'http',

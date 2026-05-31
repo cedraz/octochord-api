@@ -5,15 +5,15 @@ export class UserEntity {
   id: string;
   email: string;
   name: string;
+  imageUrl?: string | null;
+  emailVerifiedAt?: Date | null;
 
   @Exclude()
   passwordHash: string;
+
   createdAt: Date;
   updatedAt: Date;
-  phone?: string | null;
   deletedAt?: Date | null;
-  image?: string | null;
-  emailVerifiedAt?: Date | null;
 
   static async createWithPassword(
     props: Partial<UserEntity> & { password: string },

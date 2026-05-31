@@ -3,13 +3,13 @@ import { Job } from 'bullmq';
 import { MailerProvider } from '../mailer.provider';
 import { SendEmailDto } from '../dto/send-email.dto';
 import { QueueNames } from 'src/shared/helpers/queue-names.helper';
-import { CustomLogger } from 'src/shared/application/logger.service';
+import { LoggerService } from 'src/shared/application/logger.service';
 
 @Processor(QueueNames.SEND_EMAIL_QUEUE)
 export class SendEmailConsumerService extends WorkerHost {
   constructor(
     private mailerService: MailerProvider,
-    private readonly logger: CustomLogger,
+    private readonly logger: LoggerService,
   ) {
     super();
   }

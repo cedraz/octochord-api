@@ -5,10 +5,5 @@ export class UpdateProfileDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional()
-  phone?: string;
-
-  @IsString()
-  @IsOptional()
-  @ApiPropertyOptional()
   name?: string;
 }

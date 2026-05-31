@@ -14,10 +14,15 @@ export class ApiHealthCheckQueueService {
   async execute(dto: ApiHealthCheckDto) {
     const jobId = `check-${dto.url}-${dto.interval}`;
 
-    await this.apiHealthCheckQueue.add(jobId, dto, {
-      repeat: {
-        every: dto.interval * 1000, // Convert seconds to milliseconds
-      },
-    });
+    await Promise.all([
+      // Job recorrente: executa a cada `interval` segundos
+      this.apiHealthCheckQueue.add(jobId, dto, {
+        repeat: {
+          every: dto.interval * 1000,
+        },
+      }),
+      // Job imediato: executa agora para sair do PENDING na primeira checagem
+      this.apiHealthCheckQueue.add(`${jobId}-immediate`, dto),
+    ]);
   }
 }

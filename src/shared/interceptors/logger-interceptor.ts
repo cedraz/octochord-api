@@ -4,89 +4,37 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-  HttpException,
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Request, Response } from 'express';
-import { CustomLogger } from '../application/logger.service';
-import { PrometheusService } from 'src/providers/prom-client/prometheus.service';
+import { LoggerService } from '../application/logger.service';
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
-  constructor(
-    private readonly logger: CustomLogger,
-    private readonly prometheusService: PrometheusService,
-  ) {}
+  constructor(private readonly logger: LoggerService) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept<T>(context: ExecutionContext, next: CallHandler<T>): Observable<T> {
     const now = Date.now();
     const req = context.switchToHttp().getRequest<Request>();
     const { method, originalUrl, body: requestBody } = req;
 
     return next.handle().pipe(
-      tap(() => {
+      tap((responseBody) => {
         const res = context.switchToHttp().getResponse<Response>();
         const { statusCode } = res;
         const duration = Date.now() - now;
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        const routeTemplate = req.route?.path;
-
-        this.prometheusService.observeHttp({
-          method,
-          endpoint: routeTemplate,
-          statusCode: statusCode,
-          duration,
-        });
-
-        this.logSuccess(method, originalUrl, statusCode, duration, requestBody);
-      }),
-      catchError((error: Error) => {
-        const duration = Date.now() - now;
-        let statusCode = 500;
-        let errorResponseBody: any;
-
-        if (error instanceof HttpException) {
-          statusCode = error.getStatus();
-          const exceptionResponse = error.getResponse();
-
-          if (typeof exceptionResponse === 'string') {
-            errorResponseBody = {
-              statusCode,
-              message: exceptionResponse,
-              error: error.name,
-            };
-          } else {
-            errorResponseBody = exceptionResponse;
-          }
-        } else {
-          errorResponseBody = {
-            statusCode,
-            message: 'Internal Server Error',
-          };
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        const routeTemplate = req.route?.path;
-
-        this.prometheusService.observeHttp({
-          method,
-          endpoint: routeTemplate,
-          statusCode: statusCode,
-          duration,
-        });
-
-        this.logError(
+        this.logSuccess(
           method,
           originalUrl,
           statusCode,
           duration,
-          requestBody,
-          errorResponseBody,
-          error,
+          requestBody as Record<string, unknown>,
+          responseBody,
         );
-
+      }),
+      catchError((error: Error) => {
         return throwError(() => error);
       }),
     );
@@ -97,7 +45,8 @@ export class LoggerInterceptor implements NestInterceptor {
     endpoint: string,
     statusCode: number,
     duration: number,
-    requestBody: any,
+    requestBody: Record<string, unknown>,
+    responseBody: unknown,
   ) {
     const logObject = {
       method,
@@ -105,65 +54,27 @@ export class LoggerInterceptor implements NestInterceptor {
       duration,
       statusCode,
       requestBody,
+      responseBody,
     };
-    const maskedData: Record<string, any> = this.maskSensitiveData(logObject);
+    const maskedData: Record<string, unknown> =
+      this.maskSensitiveData(logObject);
+
     this.logger.log(
       `${method} ${endpoint} - ${duration}ms`,
       'HTTP',
       maskedData,
     );
-
-    // if (statusCode === 201) {
-    //   this.discordService
-    //     .sendMessage(logObject)
-    //     .catch((e) =>
-    //       this.logger.error(
-    //         'Failed to send Discord message from Interceptor',
-    //         e,
-    //       ),
-    //     );
-    // }
   }
 
-  private logError(
-    method: string,
-    endpoint: string,
-    statusCode: number,
-    duration: number,
-    requestBody: any,
-    responseBody: any,
-    error: Error,
-  ) {
-    const logObject = {
-      method,
-      endpoint,
-      duration,
-      statusCode,
-      requestBody,
-      responseBody: responseBody || error.stack,
-      errorDetails: statusCode === 500 ? error.stack : 'Not applicable',
-    };
-
-    this.logger.error(
-      `Erro na requisição: ${error.message} - ${duration}ms`,
-      'HTTP',
-      logObject,
-    );
-
-    // this.discordService
-    //   .sendMessage(logObject)
-    //   .catch((e) =>
-    //     this.logger.error('Failed to send Discord message from Interceptor', e),
-    //   );
-  }
-
-  private maskSensitiveData(data: Record<string, any>): any {
+  private maskSensitiveData(
+    data: Record<string, unknown>,
+  ): Record<string, unknown> {
     if (typeof data !== 'object' || data === null) {
       return data;
     }
 
     if (data.requestBody) {
-      const requestBody = data.requestBody as Record<string, any>;
+      const requestBody = data.requestBody as Record<string, unknown>;
       if (requestBody.password) {
         requestBody.password = '***';
       }

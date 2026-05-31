@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { OneTimeCodeRepository } from '../../domain/one-time-code.repository';
-import { CustomLogger } from 'src/shared/application/logger.service';
+import { LoggerService } from 'src/shared/application/logger.service';
 
 @Injectable()
 export class ClearOneTimeCodesCronService {
   constructor(
     private readonly oneTimeCodeRepository: OneTimeCodeRepository,
-    private readonly logger: CustomLogger,
+    private readonly logger: LoggerService,
   ) {
     this.logger.setContext(ClearOneTimeCodesCronService.name);
   }

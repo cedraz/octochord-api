@@ -3,6 +3,7 @@ import { CreateApiHealthCheckDto } from './dto/create-api-health-check.dto';
 import { UpdateApiHealthCheckDto } from './dto/update-api-health-check.dto';
 import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
 import { ApiHealthCheckPaginationDto } from './dto/api-health-check.pagination.dto';
+import { ApiHealthCheckLogPaginationDto } from './dto/api-health-check-log.pagination.dto';
 import { ApiHealthCheckQueueService } from './queue/api-health-check-queue.service';
 import { ApiHealthCheckRepository } from '../domain/api-health-check.repository';
 import { ApiHealthCheckEntity } from '../domain/entities/api-health-check.entity';
@@ -12,6 +13,7 @@ import { EmailNotificationEntity } from '../domain/entities/email-notification.e
 import { PaginationResultDto } from 'src/shared/domain/entities/pagination-result.entity';
 import { UserServiceAPI } from 'src/modules/user/application/user.service.interface';
 import { USER_SERVICE_TOKEN } from 'src/shared/tokens/tokens';
+import { ChartRange } from './dto/api-health-check-chart.dto';
 
 @Injectable()
 export class ApiHealthCheckService {
@@ -35,9 +37,11 @@ export class ApiHealthCheckService {
 
     const apiHealthCheck = await this.uow.execute(async (tx) => {
       const apiHealthCheck = new ApiHealthCheckEntity({
+        name: dto.name,
         url: dto.url,
         interval: dto.interval,
         method: dto.method,
+        slaTarget: dto.slaTarget ?? 99.9,
         userId: user.id,
         status: APIStatus.PENDING,
       });
@@ -92,5 +96,34 @@ export class ApiHealthCheckService {
 
   remove(id: string): Promise<ApiHealthCheckEntity> {
     return this.apiHealthCheckRepository.remove(id);
+  }
+
+  async getStats(id: string) {
+    await this.ensureExists(id);
+    return this.apiHealthCheckRepository.getStats(id);
+  }
+
+  async getChart(id: string, range: ChartRange) {
+    await this.ensureExists(id);
+    return this.apiHealthCheckRepository.getChart(id, range);
+  }
+
+  async getLogs(id: string, dto: ApiHealthCheckLogPaginationDto) {
+    await this.ensureExists(id);
+    return this.apiHealthCheckRepository.getLogs(id, dto);
+  }
+
+  async exportLogsCsv(id: string): Promise<string> {
+    await this.ensureExists(id);
+    return this.apiHealthCheckRepository.exportLogsCsv(id);
+  }
+
+  private async ensureExists(id: string): Promise<void> {
+    const exists = await this.apiHealthCheckRepository.findById(id);
+    if (!exists) {
+      throw new NotFoundException(
+        ErrorMessagesHelper.API_HEALTH_CHECK_NOT_FOUND,
+      );
+    }
   }
 }

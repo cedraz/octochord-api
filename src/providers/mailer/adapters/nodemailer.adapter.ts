@@ -4,13 +4,13 @@ import { env } from 'src/shared/config/env.schema';
 import { MailerProvider } from 'src/providers/mailer/mailer.provider';
 import { createEmailTemplate } from '../utils/create-email-template';
 import { SendEmailDto } from '../dto/send-email.dto';
-import { CustomLogger } from 'src/shared/application/logger.service';
+import { LoggerService } from 'src/shared/application/logger.service';
 
 @Injectable()
 export class NodemailerAdapter implements MailerProvider {
   private transporter: nodemailer.Transporter;
 
-  constructor(private readonly logger: CustomLogger) {
+  constructor(private readonly logger: LoggerService) {
     this.transporter = nodemailer.createTransport({
       host: env.MAIL_HOST,
       port: env.MAIL_PORT,

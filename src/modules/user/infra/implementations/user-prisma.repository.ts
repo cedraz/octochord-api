@@ -4,11 +4,11 @@ import { UserEntity } from '../../domain/entities/user.entity';
 import { UserPaginationDto } from '../../application/dto/user.pagination.dto';
 import { UpdateUserDto } from '../../application/dto/update-user.dto';
 import { UserRepository } from '../../domain/user.repository';
-import { CustomLogger } from 'src/shared/application/logger.service';
+import { LoggerService } from 'src/shared/application/logger.service';
 
 @Injectable()
 export class UserPrismaRepository implements UserRepository {
-  private readonly logger = new CustomLogger(UserPrismaRepository.name);
+  private readonly logger = new LoggerService(UserPrismaRepository.name);
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -16,13 +16,12 @@ export class UserPrismaRepository implements UserRepository {
     return this.prisma.user.create({
       data: {
         email: userEntity.email,
-        phone: userEntity.phone,
         name: userEntity.name,
         passwordHash: userEntity.passwordHash,
         createdAt: userEntity.createdAt,
         updatedAt: userEntity.updatedAt,
         deletedAt: userEntity.deletedAt,
-        image: userEntity.image,
+        imageUrl: userEntity.imageUrl,
         emailVerifiedAt: userEntity.emailVerifiedAt,
       },
     });
@@ -59,9 +58,8 @@ export class UserPrismaRepository implements UserRepository {
       where: { id },
       data: {
         email: updateUserDto.email,
-        phone: updateUserDto.phone,
         name: updateUserDto.name,
-        image: updateUserDto.image,
+        imageUrl: updateUserDto.imageUrl,
         updatedAt: new Date(),
         emailVerifiedAt: updateUserDto.emailVerifiedAt,
         passwordHash: updateUserDto.passwordHash,

@@ -28,11 +28,11 @@ import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { Request } from 'express';
 import { GoogleUser } from '../domain/types';
-import { CustomLogger } from 'src/shared/application/logger.service';
+import { LoggerService } from 'src/shared/application/logger.service';
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new CustomLogger(AuthService.name);
+  private readonly logger = new LoggerService(AuthService.name);
 
   constructor(
     @Inject(USER_SERVICE_TOKEN)
@@ -44,8 +44,6 @@ export class AuthService {
   ) {}
 
   googleLogin(user: GoogleUser) {
-    // todo implementar autenticação com o usuário do google
-    console.log(user);
     return {
       message: 'Google login successful',
       user,
@@ -179,6 +177,8 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException(ErrorMessagesHelper.USER_NOT_FOUND);
     }
+
+    console.log('Verificando email para o usuário:', user.email);
 
     await Promise.all([
       this.userService.update(user.id, { emailVerifiedAt: new Date() }),

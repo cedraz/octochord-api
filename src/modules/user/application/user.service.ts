@@ -100,23 +100,7 @@ export class UserService implements UserServiceAPI {
     const imageURL = response.url;
 
     return this.userRepository.update(id, {
-      image: imageURL,
+      imageUrl: imageURL,
     });
   }
-
-  // async inactivateUser(id: string) {
-  //   await this.userRepository.update(id, {
-  //     deletedAt: new Date(),
-  //   });
-
-  //   return 'Usuário inativado com sucesso.';
-  // }
-
-  // async activateUser(id: string) {
-  //   await this.userRepository.update(id, {
-  //     deletedAt: null,
-  //   });
-
-  //   return 'Usuário reativado com sucesso.';
-  // }
 }

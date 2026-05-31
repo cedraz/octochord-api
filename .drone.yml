@@ -17,17 +17,14 @@ steps:
       cache_from: icarocedraz/octochord-api:latest
 
   - name: deploy-to-server
-    image: appleboy/drone-ssh
-    settings:
-      host:
-        from_secret: ssh_host
-      username:
-        from_secret: ssh_username
-      key:
-        from_secret: ssh_key
-      script:
-        - export KUBECONFIG=/home/cedraz-ubuntu-2/.kube/config
-        - kubectl rollout restart deployment/octochord-api
+    image: bitnami/kubectl:latest
+    environment:
+      KUBECONFIG: /root/.kube/config
+    volumes:
+      - name: kubeconfig
+        path: /root/.kube
+    commands:
+      - kubectl rollout restart deployment/octochord-api
 
   - name: notificar-falha-discord
     image: appleboy/drone-discord
@@ -38,6 +35,11 @@ steps:
     when:
       status:
         - failure
+
+volumes:
+  - name: kubeconfig
+    host:
+      path: /home/cedraz-ubuntu-2/.kube
 
 trigger:
   branch:

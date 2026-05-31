@@ -1,11 +1,13 @@
 model ApiHealthCheck {
   id                  String      @id @default(cuid())
+  name                String @default("")
   url                 String
   status              APIStatus
   lastCheckedAt       DateTime    @default(now()) @map("last_checked_at")
-  interval            Int         @default(900) // Interval in seconds
+  interval            Int         @default(900)
   method              HttpMethods @default(GET)
   consecutiveFailures Int         @default(0) @map("consecutive_failures")
+  slaTarget           Float       @default(99.9) @map("sla_target")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -21,7 +23,9 @@ model ApiHealthCheck {
 model ApiHealthCheckLog {
   id           Int       @id @default(autoincrement())
   status       APIStatus
-  responseTime Int       @default(0) // Response time in milliseconds
+  statusCode   Int?      @map("status_code")  
+  errorMessage String?   @map("error_message")
+  responseTime Int       @default(0) @map("response_time")
   checkedAt    DateTime  @default(now()) @map("checked_at")
 
   apiHealthCheckId String         @map("api_health_check_id") @db.VarChar(255)

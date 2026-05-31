@@ -3,6 +3,7 @@ import {
   IsBoolean,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   IsUrl,
   validateSync,
@@ -77,6 +78,10 @@ export class EnvironmentVariables {
 
   @IsString()
   MINIO_ENDPOINT: string;
+
+  @IsOptional()
+  @IsString()
+  DISCORD_ERROR_WEBHOOK_URL: string;
 }
 
 const validatedConfig = plainToInstance(EnvironmentVariables, process.env, {

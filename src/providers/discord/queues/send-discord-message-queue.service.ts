@@ -3,14 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { Job, Queue } from 'bullmq';
 import { QueueNames } from 'src/shared/helpers/queue-names.helper';
 import { SendDiscordMessageDto } from '../dto/send-discord-message.dto';
-import { CustomLogger } from 'src/shared/application/logger.service';
+import { LoggerService } from 'src/shared/application/logger.service';
 
 @Injectable()
 export class SendDiscordMessageQueueService {
   constructor(
     @InjectQueue(QueueNames.SEND_DISCORD_MESSAGE_QUEUE)
     private sendDiscordMessageQueue: Queue<SendDiscordMessageDto, void, string>,
-    private readonly logger: CustomLogger,
+    private readonly logger: LoggerService,
   ) {}
 
   async execute(dto: SendDiscordMessageDto): Promise<void> {

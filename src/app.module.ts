@@ -11,11 +11,11 @@ import { OneTimeCodeModule } from './modules/one-time-code/one-time-code.module'
 import { IntegrationModule } from './modules/integration/integration.module';
 import { ApiHealthCheckModule } from './modules/api-health-check/api-health-check.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { CustomLogger } from './shared/application/logger.service';
 import { env } from './shared/config/env.schema';
 import { LoggerInterceptor } from './shared/interceptors/logger-interceptor';
 import { PrometheusModule } from './providers/prom-client/prometheus.module';
 import { MinioModule } from './providers/minio/minio.module';
+import { LoggerModule } from './shared/application/logger.module';
 
 @Module({
   imports: [
@@ -31,10 +31,10 @@ import { MinioModule } from './providers/minio/minio.module';
     ApiHealthCheckModule,
     PrometheusModule,
     MinioModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [
-    CustomLogger,
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggerInterceptor,
