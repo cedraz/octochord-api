@@ -276,6 +276,10 @@ export class ApiHealthCheckPrismaRepository
 
   // ── CSV Export ────────────────────────────────────────────────────────────
 
+  async countByUserId(userId: string): Promise<number> {
+    return this.prisma.apiHealthCheck.count({ where: { userId } });
+  }
+
   async exportLogsCsv(id: string): Promise<string> {
     const logs = await this.prisma.apiHealthCheckLog.findMany({
       where: { apiHealthCheckId: id },

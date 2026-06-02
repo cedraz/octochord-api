@@ -5,6 +5,7 @@ const notFoundErrorMessagesHelper = {
   FILE_NOT_FOUND: 'Arquivo não encontrado.',
   HOOK_ID_NOT_FOUND: 'Hook ID não encontrado.',
   API_HEALTH_CHECK_NOT_FOUND: 'Verificação de saúde da API não encontrada.',
+  API_HEALTH_CHECK_LIMIT_REACHED: 'Limite de 5 monitores por conta atingido.',
   OTC_NOT_FOUND: 'Código de uso único não encontrado.',
 };
 

@@ -1,4 +1,4 @@
-# Octochord
+# Octocord
 
 <p align="left">
   <img src="https://img.shields.io/badge/JSON-000?logo=json&logoColor=white" />
@@ -49,7 +49,7 @@
 
 ```bash
 git clone <seu-repositorio>
-cd octochord
+cd octocord
 ```
 
 2. **Instale as dependências**
@@ -158,7 +158,7 @@ A documentação da API está disponível via **Swagger** em `/docs` quando a ap
 docker compose up -d
 
 # Acessar PostgreSQL
-docker exec -it postgres-octochord psql -U octochord -d octochorddb
+docker exec -it postgres-octocord psql -U octocord -d octocorddb
 
 # Parar serviços
 docker compose down

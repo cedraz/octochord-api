@@ -1,23 +1,23 @@
 services:
-  api-octochord:
+  api-octocord:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: api-octochord
+    container_name: api-octocord
     ports:
       - 3000:3000
     env_file:
       - .env.prod
   
-  postgres-octochord:
+  postgres-octocord:
     image: postgres:15-alpine
-    container_name: postgres-octochord
+    container_name: postgres-octocord
     ports:
       - "${POSTGRES_PORT}:5432"
     env_file:
       - .env.prod
     volumes:
-      - pgdata-octochord:/var/lib/postgresql/data
+      - pgdata-octocord:/var/lib/postgresql/data
     deploy:
       resources:
         limits:
@@ -26,11 +26,11 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: redis-octochord
+    container_name: redis-octocord
     ports:
       - ${REDIS_PORT}:6379
     volumes:
-      - octochord-redis-data:/data
+      - octocord-redis-data:/data
     env_file:
       - .env.prod
     command: ["redis-server", "--appendonly", "yes"]
@@ -41,7 +41,7 @@ services:
           memory: 64M
 
 volumes:
-  api-octochord-data:
-  octochord-redis-data:
-  pgdata-octochord:
+  api-octocord-data:
+  octocord-redis-data:
+  pgdata-octocord:
 

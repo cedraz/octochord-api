@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateApiHealthCheckDto } from './dto/create-api-health-check.dto';
 import { UpdateApiHealthCheckDto } from './dto/update-api-health-check.dto';
 import { ErrorMessagesHelper } from 'src/shared/helpers/error-messages.helper';
@@ -33,6 +38,13 @@ export class ApiHealthCheckService {
 
     if (!user) {
       throw new NotFoundException(ErrorMessagesHelper.USER_NOT_FOUND);
+    }
+
+    const count = await this.apiHealthCheckRepository.countByUserId(userId);
+    if (count >= 5) {
+      throw new BadRequestException(
+        ErrorMessagesHelper.API_HEALTH_CHECK_LIMIT_REACHED,
+      );
     }
 
     const apiHealthCheck = await this.uow.execute(async (tx) => {

@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: deploy-octochord-api
+name: deploy-octocord-api
 
 steps:
   - name: build-and-push
@@ -12,9 +12,9 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      repo: icarocedraz/octochord-api
+      repo: icarocedraz/octocord-api
       tags: latest
-      cache_from: icarocedraz/octochord-api:latest
+      cache_from: icarocedraz/octocord-api:latest
 
   - name: deploy-to-server
     image: bitnami/kubectl:latest
@@ -24,7 +24,7 @@ steps:
       - name: kubeconfig
         path: /root/.kube
     commands:
-      - kubectl rollout restart deployment/octochord-api
+      - kubectl rollout restart deployment/octocord-api
 
   - name: notificar-falha-discord
     image: appleboy/drone-discord

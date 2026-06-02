@@ -50,4 +50,6 @@ export abstract class ApiHealthCheckRepository {
   ): Promise<PaginationResultDto<ApiHealthCheckLogEntity>>;
 
   abstract exportLogsCsv(id: string): Promise<string>;
+
+  abstract countByUserId(userId: string): Promise<number>;
 }

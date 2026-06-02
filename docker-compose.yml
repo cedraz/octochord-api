@@ -1,23 +1,23 @@
 services:
   db:
     image: postgres:17-alpine
-    container_name: postgres-octochord
+    container_name: postgres-octocord
     ports:
       - 5433:5432
     environment:
-      - POSTGRES_USER=postgres-octochord
-      - POSTGRES_PASSWORD=postgres-octochord
-      - POSTGRES_DB=postgres-octochorddb
+      - POSTGRES_USER=postgres-octocord
+      - POSTGRES_PASSWORD=postgres-octocord
+      - POSTGRES_DB=postgres-octocorddb
     volumes:
-      - octochord-postgres-data:/var/lib/postgresql/data
+      - octocord-postgres-data:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
-    container_name: redis-octochord
+    container_name: redis-octocord
     ports:
       - 6380:6379
     volumes:
-      -   octochord-redis-data:/data
+      -   octocord-redis-data:/data
     command: ["redis-server", "--appendonly", "yes"]
     deploy:
       resources:
@@ -26,7 +26,7 @@ services:
           memory: 64M
 
 volumes:
-  octochord-postgres-data:
-      name: octochord-postgres-data
-  octochord-redis-data:
-      name: octochord-redis-data
+  octocord-postgres-data:
+      name: octocord-postgres-data
+  octocord-redis-data:
+      name: octocord-redis-data
